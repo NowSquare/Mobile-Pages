@@ -346,7 +346,7 @@ class User extends Authenticatable implements JWTSubject, HasMedia
     }
 
     public function sites() {
-      return $this->hasMany(\Platform\Models\Site::class, 'created_by', 'id');
+      return $this->hasMany(\Platform\Models\Site::class, 'created_by', 'id')->whereIsRoot();
     }
 
     public function customers() {

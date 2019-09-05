@@ -95,6 +95,7 @@ export default {
       type: String
     },
     name: {
+      default: null,
       required: false,
       type: String
     }

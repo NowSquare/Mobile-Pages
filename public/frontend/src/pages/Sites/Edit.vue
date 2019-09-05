@@ -9,17 +9,17 @@ Site
       <div class="flex fit relative-position">
         <div class="full-width" style="padding-bottom: 100px;" v-show="!siteLoading">
           <q-toolbar>
-            <q-toolbar-title class="text-body1 text-center"> {{ site.pages[0].title }}<span v-if="siteChangesDetected"> *</span></q-toolbar-title>
+            <q-toolbar-title class="text-body1 text-center"> {{ site.pages[0].name }}<span v-if="siteChangesDetected"> *</span></q-toolbar-title>
             <q-btn flat round dense v-if="siteChangesDetected" @click="siteChangesDetected = false">
               <q-icon name="save" class="text-grey-9" />
               <q-tooltip>
-              Save changes
+              {{ $t('save_changes') }}
               </q-tooltip>
             </q-btn>
             <q-btn flat round dense v-if="siteChangesDetected" @click="siteChangesDetected = false">
               <q-icon name="undo" class="text-grey-9" />
               <q-tooltip>
-              Undo changes
+              {{ $t('undo_changes') }}
               </q-tooltip>
             </q-btn>
             <q-btn flat round dense>
@@ -68,7 +68,7 @@ Site
                       :selected.sync="globals.currentPage"
                       selected-color="primary"
                       node-key="uuid"
-                      label-key="title"
+                      label-key="name"
                       :expanded.sync="treeExpandedKeys"
                       @update:selected="checkForPageChanges"
                     />
@@ -193,13 +193,13 @@ Site - Design tab - Side navigation
                       <div class="q-pa-lg">
 
                         <ColorPicker
-                          label="Toolbar background color"
-                          v-model="site.design.titleBarBgColor"
+                          label="Side navigation background color"
+                          v-model="site.design.drawerBgColor"
                         />
 
                         <ColorPicker
-                          label="Toolbar text color"
-                          v-model="site.design.titleBarTextColor"
+                          label="Side navigation text color"
+                          v-model="site.design.drawerTextColor"
                         />
 
                       </div>
@@ -208,8 +208,8 @@ Site - Design tab - Side navigation
                 </q-tab-panel>
                 <q-tab-panel name="settings">
                   <q-input
-                    v-model="site.pages[0].title"
-                    label="Site title"
+                    v-model="site.pages[0].name"
+                    label="Site name"
                     maxlength="64"
                   />
                 </q-tab-panel>
@@ -240,17 +240,17 @@ Page
       <div class="flex fit" v-if="globals.currentPage !== null">
         <q-form id="frmPage" @submit.prevent.stop="savePage" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" class="fit" style="padding-bottom: 100px;">
           <q-toolbar>
-            <q-toolbar-title class="text-body1 text-center"> {{ sitePage.title }}<span v-if="pageChangesDetected"> *</span></q-toolbar-title>
+            <q-toolbar-title class="text-body1 text-center"> {{ sitePage.name }}<span v-if="pageChangesDetected"> *</span></q-toolbar-title>
             <q-btn flat round dense v-if="pageChangesDetected" type="submit">
               <q-icon name="save" class="text-grey-9" />
               <q-tooltip>
-              Save changes
+              {{ $t('save_changes') }}
               </q-tooltip>
             </q-btn>
             <q-btn flat round dense v-if="pageChangesDetected" @click="undoPageChanges">
               <q-icon name="undo" class="text-grey-9" />
               <q-tooltip>
-              Undo changes
+              {{ $t('undo_changes') }}
               </q-tooltip>
             </q-btn>
             <q-btn flat round dense>
@@ -260,10 +260,6 @@ Page
                 transition-hide="jump-up"
               >
                 <q-list style="min-width: 120px">
-                  <q-item clickable>
-                    <q-item-section>Duplicate</q-item-section>
-                  </q-item>
-                  <q-separator />
                   <q-item clickable class="text-red" @click="deletePage">
                     <q-item-section>Delete page</q-item-section>
                   </q-item>
@@ -294,32 +290,33 @@ Site - Content tab
 -->
                 <q-tab-panel name="content">
 
-                  <q-select
-                    v-model="sitePage.order"
-                    :options="pagePositions"
-                    label="Position"
-                    emit-value
-                    map-options
-                  />
-
                   <q-input
-                    v-model="sitePage.title"
-                    label="Title"
-                    name="title"
+                    ref="name"
+                    v-model="sitePage.name"
+                    label="Name"
+                    name="name"
                     maxlength="64"
+                    :error="errorBag.name.error"
+                    :error-message="errorBag.name.errorMsg"
                   />
 
                   <ImageUpload
+                    ref="imgAboveContent"
                     label="Image above content"
-                    :key="sitePage.id"
+                    :key="sitePage.uuid"
                     name="imgAboveContent"
                     v-model="sitePage.content.imgAboveContent"
+                    :error="errorBag.imgAboveContent.error"
+                    :error-message="errorBag.imgAboveContent.errorMsg"
                   />
 
                   <Editor
+                    ref="content"
                     label="Content"
                     name="content"
                     v-model="sitePage.content.content"
+                    :error="errorBag.content.error"
+                    :error-message="errorBag.content.errorMsg"
                   />
 
                 </q-tab-panel>
@@ -406,6 +403,7 @@ export default {
       oldSite: null,
       oldSitePages: null,
       undoSitePages: null,
+      errorBag: {},
       pageModules: [
         {
           icon: 'notes',
@@ -443,6 +441,24 @@ export default {
           that.rightColumnLoading = false
           that.globals.currentPage = that.site.pages[0].children[0].uuid || null
           that.currentPage = that.site.pages[0].children[0].uuid || null
+
+          /* Fill error bag for form validation, name always exists */
+          this.errorBag.name = {
+            error: false,
+            errorMsg: null
+          }
+          let fieldFound = []
+          for (let page in that.oldSitePages) {
+            for (let content in that.oldSitePages[page].content) {
+              if (!fieldFound.includes(content)) {
+                fieldFound.push(content)
+                this.errorBag[content] = {
+                  error: false,
+                  errorMsg: null
+                }
+              }
+            }
+          }
           this.$root.$emit('site', this.site)
         }
       })
@@ -534,21 +550,37 @@ export default {
       let frmPage = new FormData()
       frmPage.append('locale', this.$i18n.locale)
       frmPage.append('page', JSON.stringify(this.sitePage))
+      frmPage.append('site_uuid', this.globals.uuid)
 
-      let that = this
-      this.$axios.post('save-page', frmPage, { headers: { 'content-type': 'multipart/form-data' } })
+      this.$axios.post('site/save-page', frmPage, { headers: { 'content-type': 'multipart/form-data' } })
         .then(res => {
-          if (res.data.status === 'success') {
+          if (typeof res.data.msg !== 'undefined') {
+            this.$q.notify({
+              icon: (res.data.status === 'success') ? 'done' : 'error',
+              position: 'bottom-left',
+              message: res.data.msg
+            })
           }
+          this.pageChangesDetected = false
         })
         .catch(err => {
-          console.log(err)
+          let res = err.response.data
+          if (typeof res.errors !== 'undefined') {
+            /* Get first error and select tab where error occurs */
+            let field = Object.keys(res.errors)[0]
+            let el = (typeof this.$refs[field] !== 'undefined') ? this.$refs[field] : null
+            let tab = (el !== null) ? el.$parent.name : null
+            this.pageTab = tab
+
+            for (let field in res.errors) {
+              this.errorBag[field].error = true
+              this.errorBag[field].errorMsg = res.errors[field][0]
+            }
+          }
         })
         .finally(() => {
-          that.rightColumnLoading = false
+          this.rightColumnLoading = false
         })
-
-      this.pageChangesDetected = false
     },
     undoPageChanges () {
       this.site.pages[0].children = this.copyObject(this.undoSitePages)
@@ -580,20 +612,6 @@ export default {
       let allPages = this.getAllPages(this.site.pages[0].children, [])
       let getPageByUuid = this.$_.find(allPages, ['uuid', this.globals.currentPage])
       return getPageByUuid || null
-    },
-    pagePositions () {
-      let allPages = this.getAllPages(this.site.pages[0].children, [])
-      let response = [{
-        label: 'Homepage',
-        value: '0'
-      }]
-      for (let page in allPages) {
-        response.push({
-          label: 'Below "' + allPages[page].title + '"',
-          value: String(parseInt(allPages[page].order) + 1)
-        })
-      }
-      return response
     }
   }
 }

@@ -137,7 +137,7 @@ export default {
       search: '',
       storage: 0.26,
       links1: [
-        { icon: 'photo', text: this.$t('new_') },
+        { icon: 'photo', text: this.$t('save_changes') },
         { icon: 'photo_album', text: 'Albums' },
         { icon: 'assistant', text: 'Assistant' },
         { icon: 'people', text: 'Sharing' },

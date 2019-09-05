@@ -18,6 +18,7 @@ class CreateSitesTable extends Migration
             $table->engine = 'InnoDB';
 
             $table->bigIncrements('id');
+            $table->nestedSet();
             $table->char('uuid', 36)->nullable();
             $table->bigInteger('account_id')->unsigned()->index();
             $table->foreign('account_id')->references('id')->on('users')->onDelete('cascade');
@@ -27,7 +28,6 @@ class CreateSitesTable extends Migration
             $table->string('host', 128)->index()->nullable();
             $table->string('ssl_app_id', 64)->nullable();
             $table->string('name', 128);
-            $table->mediumText('description')->nullable();
             $table->string('language', 5)->nullable();
             $table->json('content')->nullable();
             $table->json('design')->nullable();

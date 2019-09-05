@@ -14,10 +14,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
+use Kalnoy\Nestedset\NodeTrait;
 
 class Site extends Model implements HasMedia
 {
     use HasMediaTrait;
+    use NodeTrait;
 
     protected $table = 'sites';
 
@@ -35,47 +37,10 @@ class Site extends Model implements HasMedia
      * @var array
      */
     protected $appends = [
-      'home_image',
-      'home_item1_image',
-      'home_item2_image',
-      'home_item3_image',
       'url',
       'short_url',
       'test_url'
     ];
-
-    public function registerMediaCollections() {
-
-      $this
-        ->addMediaCollection('home_image')
-        ->singleFile();
-
-      $this
-        ->addMediaCollection('home_item1_image')
-        ->singleFile();
-
-      $this
-        ->addMediaCollection('home_item2_image')
-        ->singleFile();
-
-      $this
-        ->addMediaCollection('home_item3_image')
-        ->singleFile();
-    }
-
-    public function registerMediaConversions(Media $media = null) {
-        $this
-          ->addMediaConversion('full_header')
-          ->width(1280)
-          ->height(1024)
-          ->performOnCollections('home_image');
-
-        $this
-          ->addMediaConversion('item')
-          ->width(640)
-          ->height(480)
-          ->performOnCollections('home_item1_image', 'home_item2_image', 'home_item3_image');
-    }
 
     /**
      * The attributes that should be hidden for arrays.
@@ -180,16 +145,35 @@ class Site extends Model implements HasMedia
      * @return array
      */
     public function getSite() {
+      $sitePages = \Platform\Models\Site::whereDescendantOrSelf($this)->get();
+
+      $children = [];
+      foreach ($sitePages as $index => $page) {
+        if ($index > 0) {
+          $content = $page->content;
+          $content['imgAboveContent'] = $content['imgAboveContent'] ?? '';
+          $content['content'] = $content['content'] ?? '';
+
+          $children[] = [
+            'uuid' => $page->uuid,
+            'name' => $page->name,
+            'content' => $content,
+            'module' => 'Content',
+            'icon' => 'notes'
+          ];
+        }
+      }
+
       $response = [
-        'design' => $this->getDesign(),
+        'design' => $sitePages[0]->getDesign(),
         'pages' => [
           [
             'uuid' => -1,
-            'title' => $this->name,
+            'name' => $sitePages[0]->name,
             'icon' => 'mdi-qrcode',
             'selectable' => false,
             'expandable' => false,
-            'children' => $this->getPages()
+            'children' => $children
           ]
         ]
       ];
@@ -204,74 +188,19 @@ class Site extends Model implements HasMedia
      */
     public function getDesign() {
       $response = [
-        'bgColor' => $this['design->bgColor'] ?? '#eeeeee',
-        'textColor' => $this['design->textColor'] ?? '#222222',
-        'bgImg' => $this['design->bgImg'] ?? '',
-        'headerBgColor' => $this['design->headerBgColor'] ?? '#455a64',
-        'headerTextColor' => $this['design->headerTextColor'] ?? '#ffffff',
-        'titleBarBgColor' => $this['design->titleBarBgColor'] ?? '#607d8b',
-        'titleBarTextColor' => $this['design->titleBarTextColor'] ?? '#eeeeee'
+        'bgColor' => $this->design['bgColor'] ?? '#eeeeee',
+        'textColor' => $this->design['textColor'] ?? '#222222',
+        'bgImg' => $this->design['bgImg'] ?? '',
+        'headerBgColor' => $this->design['headerBgColor'] ?? '#455a64',
+        'headerTextColor' => $this->design['headerTextColor'] ?? '#ffffff',
+        'titleBarBgColor' => $this->design['titleBarBgColor'] ?? '#607d8b',
+        'titleBarTextColor' => $this->design['titleBarTextColor'] ?? '#eeeeee',
+        'drawerBgColor' => $this->design['drawerBgColor'] ?? '#eeeeee',
+        'drawerTextColor' => $this->design['drawerTextColor'] ?? '#222222'
       ];
 
       return $response;
     }  
-
-    /**
-     * Get all pages of site
-     *
-     * @return array
-     */
-    public function getPages() {
-      $sitePages = $this->sitePages;
-      $pages = [];
-
-      if (count($sitePages) > 0) {
-        foreach ($sitePages as $page) {
-          $pages[] = [
-            'uuid' => $page->uuid,
-            'title' => $page->title,
-            'order' => $page->order,
-            'module' => 'Content',
-            'icon' => 'notes',
-            'content' => [
-              'content' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-              'imgAboveContent' => '',
-              'imgBelowContent' => 'https://placeimg.com/500/300/nature'
-            ]
-          ];
-        }
-      }
-      return $pages;
-    }  
-
-    /**
-     * Images
-     * -------------
-     */
-
-    public function getHomeImageAttribute() {
-      return ($this->getFirstMediaUrl('home_image') !== '') ? $this->getMedia('home_image')[0]->getUrl('full_header') : null;
-      //return ($this->getFirstMediaUrl('home_image') !== '') ? $this->getFirstMediaUrl('home_image') : null;
-    }
-
-    public function getHomeImageThumbAttribute() {
-      return ($this->getFirstMediaUrl('home_image') !== '') ? $this->getMedia('home_image')[0]->getUrl('thumb') : null;
-    }
-
-    public function getHomeItem1ImageAttribute() {
-      return ($this->getFirstMediaUrl('home_item1_image') !== '') ? $this->getMedia('home_item1_image')[0]->getUrl('item') : null;
-      //return ($this->getFirstMediaUrl('home_item1_image') !== '') ? $this->getFirstMediaUrl('home_item1_image') : null;
-    }
-
-    public function getHomeItem2ImageAttribute() {
-      return ($this->getFirstMediaUrl('home_item2_image') !== '') ? $this->getMedia('home_item2_image')[0]->getUrl('item') : null;
-      //return ($this->getFirstMediaUrl('home_item2_image') !== '') ? $this->getFirstMediaUrl('home_item2_image') : null;
-    }
-
-    public function getHomeItem3ImageAttribute() {
-      return ($this->getFirstMediaUrl('home_item3_image') !== '') ? $this->getMedia('home_item3_image')[0]->getUrl('item') : null;
-      //return ($this->getFirstMediaUrl('home_item3_image') !== '') ? $this->getFirstMediaUrl('home_item3_image') : null;
-    }
 
     /**
      * Relationships
@@ -284,10 +213,6 @@ class Site extends Model implements HasMedia
 
     public function user() {
       return $this->belongsTo(\App\User::class, 'created_by', 'id');
-    }
-
-    public function sitePages() {
-      return $this->hasMany(\Platform\Models\SitePage::class, 'site_id', 'id')->orderBy('order');
     }
 
     public function siteUsers() {

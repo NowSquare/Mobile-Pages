@@ -126,7 +126,6 @@ export default {
           remember: this.form.remember
         },
         success: function (res) {
-          console.log(res.data.token)
           this.$q.notify({
             icon: 'done',
             message: 'Login successful'

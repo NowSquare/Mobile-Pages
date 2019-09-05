@@ -2,5 +2,6 @@
 // so you can safely delete all default props below
 
 export default {
-  new_: 'New...'
+  save_changes: 'Save changes',
+  undo_changes: 'Undo changes'
 }

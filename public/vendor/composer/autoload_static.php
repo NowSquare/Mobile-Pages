@@ -127,6 +127,10 @@ class ComposerStaticInitb126ba3178005c7236506389b7b7e1ee
             'Laravolt\\Avatar\\' => 16,
             'Laravel\\Tinker\\' => 15,
         ),
+        'K' => 
+        array (
+            'Kalnoy\\Nestedset\\' => 17,
+        ),
         'J' => 
         array (
             'JakubOnderka\\PhpConsoleHighlighter\\' => 35,
@@ -430,6 +434,10 @@ class ComposerStaticInitb126ba3178005c7236506389b7b7e1ee
         'Laravel\\Tinker\\' => 
         array (
             0 => __DIR__ . '/..' . '/laravel/tinker/src',
+        ),
+        'Kalnoy\\Nestedset\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kalnoy/nestedset/src',
         ),
         'JakubOnderka\\PhpConsoleHighlighter\\' => 
         array (
@@ -2636,6 +2644,14 @@ class ComposerStaticInitb126ba3178005c7236506389b7b7e1ee
         'JakubOnderka\\PhpConsoleColor\\InvalidStyleException' => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src/InvalidStyleException.php',
         'JakubOnderka\\PhpConsoleHighlighter\\Highlighter' => __DIR__ . '/..' . '/jakub-onderka/php-console-highlighter/src/Highlighter.php',
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
+        'Kalnoy\\Nestedset\\AncestorsRelation' => __DIR__ . '/..' . '/kalnoy/nestedset/src/AncestorsRelation.php',
+        'Kalnoy\\Nestedset\\BaseRelation' => __DIR__ . '/..' . '/kalnoy/nestedset/src/BaseRelation.php',
+        'Kalnoy\\Nestedset\\Collection' => __DIR__ . '/..' . '/kalnoy/nestedset/src/Collection.php',
+        'Kalnoy\\Nestedset\\DescendantsRelation' => __DIR__ . '/..' . '/kalnoy/nestedset/src/DescendantsRelation.php',
+        'Kalnoy\\Nestedset\\NestedSet' => __DIR__ . '/..' . '/kalnoy/nestedset/src/NestedSet.php',
+        'Kalnoy\\Nestedset\\NestedSetServiceProvider' => __DIR__ . '/..' . '/kalnoy/nestedset/src/NestedSetServiceProvider.php',
+        'Kalnoy\\Nestedset\\NodeTrait' => __DIR__ . '/..' . '/kalnoy/nestedset/src/NodeTrait.php',
+        'Kalnoy\\Nestedset\\QueryBuilder' => __DIR__ . '/..' . '/kalnoy/nestedset/src/QueryBuilder.php',
         'Laravel\\Tinker\\ClassAliasAutoloader' => __DIR__ . '/..' . '/laravel/tinker/src/ClassAliasAutoloader.php',
         'Laravel\\Tinker\\Console\\TinkerCommand' => __DIR__ . '/..' . '/laravel/tinker/src/Console/TinkerCommand.php',
         'Laravel\\Tinker\\TinkerCaster' => __DIR__ . '/..' . '/laravel/tinker/src/TinkerCaster.php',

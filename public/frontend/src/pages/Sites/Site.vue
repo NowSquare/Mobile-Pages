@@ -4,7 +4,7 @@
       <q-header reveal :style="{'background-color': site.design.headerBgColor, 'color': site.design.headerTextColor}">
         <q-toolbar>
           <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" />
-          <q-toolbar-title>{{ site.pages[0].title }}</q-toolbar-title>
+          <q-toolbar-title>{{ site.pages[0].name }}</q-toolbar-title>
         </q-toolbar>
       </q-header>
 
@@ -12,15 +12,16 @@
         v-model="drawerLeft"
         :width="260"
         :breakpoint="700"
-        bordered
-        content-class="bg-grey-3"
+        content-class="shadow-2"
+        :content-style="{'background-color': site.design.drawerBgColor}"
       >
+
         <q-scroll-area class="fit">
           <div class="q-pa-sm">
 
-            <q-item v-for="page in getPages()" :key="page.id" clickable>
+            <q-item v-for="page in getPages()" :key="page.id" clickable :style="{'color': site.design.drawerTextColor}">
               <q-item-section>
-                <q-item-label>{{ page.title }}</q-item-label>
+                <q-item-label>{{ page.name }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -33,7 +34,7 @@
 
           <q-page-sticky style="z-index:999" position="top" expand :style="{'background-color': site.design.titleBarBgColor, 'color': site.design.titleBarTextColor}">
             <q-toolbar>
-              <q-toolbar-title>{{ sitePage.title }}</q-toolbar-title>
+              <q-toolbar-title>{{ sitePage.name }}</q-toolbar-title>
             </q-toolbar>
           </q-page-sticky>
 
@@ -73,10 +74,10 @@ export default {
         page: 0,
         pages: [
           {
-            title: null,
+            name: null,
             children: [
               {
-                title: null,
+                name: null,
                 content: null
               }
             ]

@@ -12,11 +12,13 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+  Route::get('test', '\Platform\Controllers\Site\SiteController@getTest');
 
 // Secured app routes
 Route::group(['middleware' => 'auth:api'], function() {
   Route::get('sites', '\Platform\Controllers\Site\SiteController@getSites');
   Route::get('site', '\Platform\Controllers\Site\SiteController@getSite');
+  Route::post('site/save-page', '\Platform\Controllers\Site\SiteController@postSavePage');
 });
 
 // App authorization routes
