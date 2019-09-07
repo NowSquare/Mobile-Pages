@@ -61,7 +61,6 @@ class AppServiceProvider extends ServiceProvider
             if ($account->app_mail_name_from !== null) config(['general.mail_name_from' => $account->app_mail_name_from]);
             if ($account->app_mail_address_from !== null) config(['general.mail_address_from' => $account->app_mail_address_from]);
 
-            if ($account->app_color === null) $account->app_color = '#304FFE';
             if ($account->app_name === null) $account->app_name = config('app.name');
             if ($account->app_host === null) $account->app_host = request()->getHost();
             $account->app_scheme = request()->getScheme();
@@ -91,7 +90,6 @@ class AppServiceProvider extends ServiceProvider
             $account->app_vendor_id = null;
             $account->id = 1;
             $account->role = 2;
-            $account->app_color = '#304FFE';
             $account->app_name = config('app.name');
             $account->app_host = request()->getHost();
             $account->app_scheme = request()->getScheme();

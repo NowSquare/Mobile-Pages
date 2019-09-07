@@ -11,10 +11,4 @@
 |
 */
 
-Route::get('db', function () {
-    dd(90);
-});
-
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', '\Platform\Controllers\App\AppController@index');

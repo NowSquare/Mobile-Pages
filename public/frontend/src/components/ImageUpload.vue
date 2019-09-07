@@ -1,31 +1,33 @@
 <template>
-  <div class="row q-gutter-lg">
-    <div class="col">
-      <q-field :label="label" stack-label borderless class="q-mt-xs">
-        <template v-slot:control>
-          <q-uploader
-            @added="uploadAdded"
-            @removed="uploadRemoved"
-            ref="uploader"
-            label="Upload new image"
-            accept=".jpg, image/*"
-            style="width: 100%"
-            color="grey-8"
-            class="q-mt-sm"
-            flat
-            bordered
-            hide-upload-btn
-          />
-        </template>
-      </q-field>
-    </div>
-    <div class="col" v-show="false">
-      <q-field label="Image" stack-label borderless class="q-mt-xs">
-        <template v-slot:control>
-          <q-btn color="white" text-color="black" class="full-width q-mt-sm" size="sm" label="Style" />
-          <q-btn color="red" class="full-width q-mt-sm" size="sm" label="Delete" />
-        </template>
-      </q-field>
+  <div>
+    <q-field :label="label" stack-label borderless class="q-mt-xs">
+      <template v-slot:control>
+        <div class="row full-width">
+          <div class="col q-mr-sm">
+            <q-btn color="white" text-color="black" class="full-width" size="md" icon="add_photo_alternate" label="Upload image" @click="showUploader =! showUploader" no-caps />
+          </div>
+          <div class="col q-ml-sm">
+            <q-btn v-if="imgSrc !== ''" color="red" class="full-width" size="md" @click="$refs.uploader.reset(); imgSrc = ''" label="Delete image" no-caps />
+          </div>
+        </div>
+      </template>
+    </q-field>
+    <div class="row" v-show="showUploader">
+      <div class="col">
+        <q-uploader
+          @added="uploadAdded"
+          @removed="uploadRemoved"
+          ref="uploader"
+          label="Upload new image"
+          accept=".jpg, image/*"
+          style="width: 100%"
+          color="grey-8"
+          class="q-mb-md"
+          flat
+          bordered
+          hide-upload-btn
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -38,6 +40,7 @@ export default {
   },
   data () {
     return {
+      showUploader: false,
       uploadImgSrc: null,
       uploadImgSrcOld: null
     }

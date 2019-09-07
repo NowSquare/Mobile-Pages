@@ -1,6 +1,8 @@
 <template>
-  <q-page class="flex">
-    Welcome
+  <q-page class="flex bg-blue-8 text-white">
+    <div class="fit self-center text-center">
+    <span class="text-h2">Fast. Mobile. Content.</span>
+    </div>
   </q-page>
 </template>
 <script>

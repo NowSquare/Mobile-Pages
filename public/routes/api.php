@@ -12,7 +12,16 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-  Route::get('test', '\Platform\Controllers\Site\SiteController@getTest');
+
+// Test route
+Route::get('test', '\Platform\Controllers\Site\SiteController@getTest');
+
+// Public routes
+Route::group(['prefix' => 'localization'], function() {
+  Route::get('locales', '\Platform\Controllers\Core\Localization@getLocales');
+  Route::get('timezones', '\Platform\Controllers\Core\Localization@getTimezones');
+  Route::get('currencies', '\Platform\Controllers\Core\Localization@getCurrencies');
+});
 
 // Secured app routes
 Route::group(['middleware' => 'auth:api'], function() {

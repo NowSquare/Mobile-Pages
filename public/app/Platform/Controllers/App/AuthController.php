@@ -28,63 +28,6 @@ class AuthController extends \App\Http\Controllers\Controller
     */
 
     /**
-     * Handle user registration.
-     *
-     * @return \Symfony\Component\HttpFoundation\Response 
-     */
-    public function register(Request $request) {
-      $v = Validator::make($request->all(), [
-        'name' => 'required|min:2|max:32',
-        'email' => 'required|email|max:32|unique:users',
-        'password' => 'required|min:8|max:24',
-        'terms' => 'accepted',
-      ]);
-
-      if ($v->fails()) {
-        return response()->json([
-          'status' => 'error',
-          'errors' => $v->errors()
-        ], 422);
-      }
-
-      $locale = request('locale', config('system.default_language'));
-      app()->setLocale($locale);
-
-      $account = app()->make('account');
-      $language = ($request->language !== null) ? $request->language : config('system.default_language');
-      $timezone = ($request->timezone !== null) ? $request->timezone : config('system.default_timezone');
-
-      $currency = config('system.default_currency');
-
-      // Detect currency based on locale
-      if (false !== setlocale(LC_ALL, $locale)) {
-        $locale_info = localeconv();
-        $currency = $locale_info['int_curr_symbol'];
-      }
-
-      $verification_code = str_random(32);
-      $trial_days = config('system.trial_days'); 
-
-      $user = new User;
-      $user->account_id = $account->id;
-      $user->created_by = $account->id;
-      $user->role = 3;
-      $user->active = 1;
-      $user->name = $request->name;
-      $user->email = $request->email;
-      $user->password = bcrypt($request->password);
-      $user->language = $language;
-      $user->locale = $locale;
-      $user->timezone = $timezone;
-      $user->currency_code = $currency;
-      $user->expires = Carbon::now()->addDays($trial_days);
-      $user->signup_ip_address = request()->ip();
-      $user->verification_code = $verification_code;
-      $user->save();
-      return response()->json(['status' => 'success'], 200);
-    }
-  
-    /**
      * Handle user login.
      *
      * @return \Symfony\Component\HttpFoundation\Response 
@@ -141,8 +84,7 @@ class AuthController extends \App\Http\Controllers\Controller
     public function refresh() {
       try {
         $token = $this->guard()->refresh();
-      }
-      catch (\Exception $e) {
+      } catch (\Exception $e) {
         return response()->json(['error' => 'refresh_token_error'], 401);
       }
 

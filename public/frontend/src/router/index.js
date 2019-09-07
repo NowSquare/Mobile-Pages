@@ -27,7 +27,7 @@ export default function (/* { store, ssrContext } */) {
 
   Vue.use(VueAxios, axios)
 
-  Vue.axios.defaults.baseURL = window.endpoint + '/api/'
+  Vue.axios.defaults.baseURL = '//' + window.config.app_host + '/api/'
   Vue.axios.defaults.headers.common = {
     'Accept': 'application/json',
     'Content-Type': 'application/json;charset=UTF-8',
@@ -46,7 +46,7 @@ export default function (/* { store, ssrContext } */) {
     logoutData: { url: 'auth/logout', method: 'POST', redirect: '/', makeRequest: true },
     fetchData: { url: 'auth/user', method: 'GET', enabled: true },
     refreshData: { url: 'auth/refresh', method: 'GET', enabled: true, interval: 30 },
-    notFoundRedirect: { path: '/dashboard' } /* https://github.com/websanova/vue-auth/blob/master/docs/Privileges.md */
+    notFoundRedirect: { name: 'sites.overview' } /* redirect when auth is not allowed, but user is logged in (e.g. login page) */
   })
 
   return Vue.router

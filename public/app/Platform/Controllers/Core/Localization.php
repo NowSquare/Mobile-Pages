@@ -15,7 +15,7 @@ class Localization extends \App\Http\Controllers\Controller {
      *
      * @return \Symfony\Component\HttpFoundation\Response 
      */
-    public static function getLocales() {
+    public static function getLocales($keyVal = false) {
         $locale = request('locale', config('system.default_language'));
         app()->setLocale($locale);
 
@@ -26,7 +26,14 @@ class Localization extends \App\Http\Controllers\Controller {
         $locales = [];
         foreach ($available_locales as $locale) {
           if (isset($all_locales[$locale])) {
-            $locales[$locale] = $all_locales[$locale];
+            if ($keyVal) {
+              $locales[$locale] = $all_locales[$locale];
+            } else {
+              $locales[] = [
+                'label' => $all_locales[$locale],
+                'value' => $locale
+              ];
+            }
           }
         }
 
@@ -38,14 +45,21 @@ class Localization extends \App\Http\Controllers\Controller {
      *
      * @return \Symfony\Component\HttpFoundation\Response 
      */
-    public static function getTimezones() {
-        $timezones = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
+    public static function getTimezones($keyVal = false) {
+      $timezones = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
 
-        foreach ($timezones as $timezone) {
-            $tzList[$timezone] = str_replace('_', ' ', $timezone);
+      $response = [];
+      foreach ($timezones as $timezone) {
+        if ($keyVal) {
+          $response[$timezone] = str_replace('_', ' ', $timezone);
+        } else {
+          $response[] = [
+            'label' => str_replace('_', ' ', $timezone),
+            'value' => $timezone
+          ];
         }
-
-        return response()->json($tzList, 200);
+      }
+      return response()->json($response, 200);
     }
 
     /**
@@ -53,21 +67,27 @@ class Localization extends \App\Http\Controllers\Controller {
      *
      * @return \Symfony\Component\HttpFoundation\Response 
      */
-    public static function getCurrencies() {
-        $locale = request('locale', config('system.default_language'));
-        app()->setLocale($locale);
+    public static function getCurrencies($keyVal = false) {
+      $locale = request('locale', config('system.default_language'));
+      app()->setLocale($locale);
 
-        $currencyRepository = new \CommerceGuys\Intl\Currency\CurrencyRepository;
+      $currencyRepository = new \CommerceGuys\Intl\Currency\CurrencyRepository;
 
-        $currencies = $currencyRepository->getAll($locale);
+      $currencies = $currencyRepository->getAll($locale);
 
-        $return = [];
+      $return = [];
 
-        foreach ($currencies as $currency_code => $currency) {
-            $return[$currency_code] = $currency->getName() . ' (' . $currency_code . ')';
+      foreach ($currencies as $currency_code => $currency) {
+        if ($keyVal) {
+          $return[$currency_code] = $currency->getName() . ' (' . $currency_code . ')';
+        } else {
+          $response[] = [
+            'label' => $currency->getName() . ' (' . $currency_code . ')',
+            'value' => $currency_code
+          ];
         }
-
-        return response()->json($return, 200);
+      }
+      return response()->json($return, 200);
     }
 
     /**
@@ -77,20 +97,20 @@ class Localization extends \App\Http\Controllers\Controller {
      * @return array
      */
     public static function getRange($strDateFrom, $strDateTo) {
-        $aryRange = array();
+      $aryRange = array();
 
-        $iDateFrom = mktime(1, 0, 0, substr($strDateFrom, 5, 2), substr($strDateFrom, 8, 2), substr($strDateFrom, 0, 4));
-        $iDateTo = mktime(1, 0, 0, substr($strDateTo, 5, 2), substr($strDateTo, 8, 2), substr($strDateTo, 0, 4));
+      $iDateFrom = mktime(1, 0, 0, substr($strDateFrom, 5, 2), substr($strDateFrom, 8, 2), substr($strDateFrom, 0, 4));
+      $iDateTo = mktime(1, 0, 0, substr($strDateTo, 5, 2), substr($strDateTo, 8, 2), substr($strDateTo, 0, 4));
 
-        if ($iDateTo >= $iDateFrom) {
-            $d = ['y' => (int) date('Y', $iDateFrom), 'm' => (int) date('n', $iDateFrom), 'd' => (int) date('j', $iDateFrom)];
-            $aryRange[date('Y-m-d', $iDateFrom)] = $d; // first entry
-            while ($iDateFrom < $iDateTo) {
-                $iDateFrom +=86400; // add 24 hours
-                $d = ['y' => (int) date('Y', $iDateFrom), 'm' => (int) date('n', $iDateFrom), 'd' => (int) date('j', $iDateFrom)];
-                $aryRange[date('Y-m-d', $iDateFrom)] = $d;
-            }
+      if ($iDateTo >= $iDateFrom) {
+        $d = ['y' => (int) date('Y', $iDateFrom), 'm' => (int) date('n', $iDateFrom), 'd' => (int) date('j', $iDateFrom)];
+        $aryRange[date('Y-m-d', $iDateFrom)] = $d; // first entry
+        while ($iDateFrom < $iDateTo) {
+          $iDateFrom +=86400; // add 24 hours
+          $d = ['y' => (int) date('Y', $iDateFrom), 'm' => (int) date('n', $iDateFrom), 'd' => (int) date('j', $iDateFrom)];
+          $aryRange[date('Y-m-d', $iDateFrom)] = $d;
         }
-        return $aryRange;
+      }
+      return $aryRange;
     }
 }

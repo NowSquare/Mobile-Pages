@@ -23,15 +23,12 @@ class AppController extends \App\Http\Controllers\Controller {
    */
   public function index() {
     $account = app()->make('account');
-    $config = $account->config;
-    $account = (object) $account->only('version', 'app_name', 'app_headline', 'app_color', 'app_scheme', 'app_host', 'language', 'locale');
-
     if (env('APP_DEMO', false) === true) $account->demo = true;
+    $config = (object) $account->only('version', 'config', 'app_name', 'app_headline', 'app_scheme', 'app_host', 'language', 'locale');
 
-    $account->color_name = 'indigo accent-4 white--text';
-    $account->text_color_name = 'white';
+    $config = json_encode($config);
 
-    return view('app.index', compact('account', 'config'));
+    return view('app', compact('account', 'config'));
   }
   /**
    * This page is shown when no account is matched with the host

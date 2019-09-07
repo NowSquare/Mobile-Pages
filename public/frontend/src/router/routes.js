@@ -12,7 +12,7 @@ const routes = [
     ]
   },
   {
-    path: '/login',
+    path: '/auth/login',
     component: () => import('layouts/Master.vue'),
     children: [
       {
@@ -23,6 +23,48 @@ const routes = [
     ],
     meta: {
       auth: false
+    }
+  },
+  {
+    path: '/auth/password/reset',
+    component: () => import('layouts/Master.vue'),
+    children: [
+      {
+        path: '',
+        name: 'password.email',
+        component: () => import('pages/Auth/Password/Email.vue')
+      }
+    ],
+    meta: {
+      auth: false
+    }
+  },
+  {
+    path: '/auth/password/reset/:token',
+    component: () => import('layouts/Master.vue'),
+    children: [
+      {
+        path: '',
+        name: 'password.reset',
+        component: () => import('pages/Auth/Password/Reset.vue')
+      }
+    ],
+    meta: {
+      auth: false
+    }
+  },
+  {
+    path: '/user/profile',
+    component: () => import('layouts/Master.vue'),
+    children: [
+      {
+        path: '',
+        name: 'user.profile',
+        component: () => import('pages/User/Profile.vue')
+      }
+    ],
+    meta: {
+      auth: { roles: [1, 2], redirect: { name: 'login' }, forbiddenRedirect: '/' }
     }
   },
   {
@@ -46,6 +88,20 @@ const routes = [
       {
         path: '',
         name: 'site.edit',
+        component: () => import('pages/Sites/Edit.vue')
+      }
+    ],
+    meta: {
+      auth: { roles: [2], redirect: { name: 'login' }, forbiddenRedirect: '/' }
+    }
+  },
+  {
+    path: '/site/new',
+    component: () => import('layouts/Master.vue'),
+    children: [
+      {
+        path: '',
+        name: 'site.new',
         component: () => import('pages/Sites/Edit.vue')
       }
     ],

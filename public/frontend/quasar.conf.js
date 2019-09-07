@@ -104,9 +104,13 @@ module.exports = function (ctx) {
 
     supportIE: true,
 
+    htmlVariables: {
+      config: ctx.dev ? '{"version":"1.0.0","config":{"pusher":{"key":"","app_id":"","options":{"cluster":"mt1","encrypted":true}}},"app_name":"Mobile Site Builder","app_headline":null,"app_scheme":"http","app_host":"msb.test","language":"en","locale":"en"}' : '{!! $config !!}'
+    },
+
     build: {
       distDir: '../public/assets',
-      htmlFilename: '../index.html',
+      htmlFilename: '../../resources/views/app.blade.php',
       publicPath: '/assets',
       scopeHoisting: true,
       vueRouterMode: 'hash',
@@ -145,8 +149,8 @@ module.exports = function (ctx) {
       // workboxOptions: {}, // only for NON InjectManifest
       manifest: {
         // name: 'App',
-        // short_name: 'App',
-        // description: 'A NowSquare App',
+        short_name: 'Mobile Site Builder',
+        description: 'Mobile Site Builder for fast content',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

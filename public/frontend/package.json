@@ -1,8 +1,8 @@
 {
   "name": "app",
   "version": "0.0.1",
-  "description": "A NowSquare App",
-  "productName": "App",
+  "description": "Mobile Site Builder for fast content",
+  "productName": "Mobile Site Builder",
   "cordovaId": "org.cordova.quasar.app",
   "author": "NowSquare <info@nowsquare.com>",
   "private": true,

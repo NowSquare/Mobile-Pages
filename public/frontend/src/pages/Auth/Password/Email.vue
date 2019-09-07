@@ -6,7 +6,7 @@
           <q-card-section>
             <div class="row items-center no-wrap">
               <div class="col">
-                <div class="text-h5">{{ $t('log_in') }}</div>
+                <div class="text-h5">Reset password</div>
               </div>
             </div>
 
@@ -29,6 +29,10 @@
           <q-form ref="frm" @submit.prevent.stop="onSubmit" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
 
             <q-card-section>
+              A link to reset your password will be sent to your e-mail address.
+            </q-card-section>
+
+            <q-card-section>
               <q-input
                 class="q-mb-sm"
                 name="email"
@@ -36,7 +40,7 @@
                 :error="form.email.error"
                 :error-message="form.email.errorMsg"
                 type="email"
-                :label="$t('email_address')"
+                label="Enter e-mail address"
                 @keyup="resetValidation($event)"
               >
                 <template v-slot:prepend>
@@ -44,39 +48,18 @@
                 </template>
               </q-input>
 
-              <q-input
-                class="q-mb-sm"
-                name="password"
-                v-model="form.password.value"
-                :error="form.password.error"
-                :error-message="form.password.errorMsg"
-                type="password"
-                :label="$t('password')"
-                @keyup="resetValidation($event)"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="mdi-key-variant" />
-                </template>
-
-                <template v-slot:append>
-                  <q-btn flat no-caps :to="{ name: 'password.email' }">{{ $t('forgot_password') }}</q-btn>
-                </template>
-              </q-input>
-
-              <q-checkbox
-                v-model="form.remember"
-                label="Keep me logged in"
-                color="blue-grey-8"
-              />
-
             </q-card-section>
 
             <q-card-actions>
-              <q-btn type="submit" :loading="loading" color="green" class="full-width no-border-radius shadow-0" size="lg">Login</q-btn>
+              <q-btn type="submit" :loading="loading" color="green" class="full-width no-border-radius shadow-0" size="lg">Send reset link</q-btn>
             </q-card-actions>
           </q-form>
         </q-card>
       </div>
+      <q-card-actions class="q-pa-none q-pt-md">
+        <q-space />
+        <q-btn flat no-caps color="white" :to="{ name: 'login' }">Back to login</q-btn>
+      </q-card-actions>
     </div>
   </q-page>
 </template>
@@ -88,20 +71,14 @@ export default {
   data () {
     return {
       loading: false,
-      successMsg: null, /* You can now log in. */
+      successMsg: null,
       errorMsg: null,
       form: {
         email: {
           value: null,
           error: false,
           errorMsg: null
-        },
-        password: {
-          value: null,
-          error: false,
-          errorMsg: null
-        },
-        remember: true
+        }
       }
     }
   },
@@ -112,25 +89,20 @@ export default {
   methods: {
     onSubmit () {
       this.loading = true
-      let redirect = this.$auth.redirect()
 
-      this.$auth.login({
-        redirect: { name: redirect ? redirect.from.name : 'sites.overview', query: redirect ? redirect.from.query : null },
-        rememberMe: this.form.remember,
-        fetchUser: true,
-        params: {
+      this.$axios
+        .post('/auth/password/reset', {
           locale: this.$i18n.locale,
-          email: this.form.email.value,
-          password: this.form.password.value,
-          remember: this.form.remember
-        },
-        success: function (res) {
-          this.$q.notify({
-            icon: 'done',
-            message: 'Login successful'
-          })
-        },
-        error: function (err) {
+          email: this.form.email.value
+        })
+        .then(response => {
+          if (response.data.status === 'success') {
+            this.$router.push({ name: 'login', params: { successResetRedirect: true } })
+          } else if (typeof response.data.error !== 'undefined') {
+            this.errorMsg = response.data.error
+          }
+        })
+        .catch(err => {
           let res = err.response.data
           if (typeof res.error !== 'undefined') {
             this.errorMsg = res.error
@@ -142,8 +114,10 @@ export default {
             }
           }
           this.loading = false
-        }
-      })
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     resetValidation (event) {
       if (typeof event.target.name !== 'undefined') {

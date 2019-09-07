@@ -29,7 +29,7 @@ class DemoContentSeeder extends Seeder
 
       $background_colors = ['#EEEEEE', '#EEEEEE', '#EEEEEE', '#e1f5fe'];
       $primary_colors = ['#9b0000', '#eeeeee', '#D7D7D7', '#FBC02D'];
-      $primary_text_colors = ['#eeeeee', '#222222', '#0026ca', '#333333'];
+      $primary_text_colors = ['#9b0000', '#222222', '#0026ca', '#333333'];
       $secondary_colors = ['#d50000', '#ff1744', '#304ffe', '#E64A19'];
       $secondary_text_colors = ['#ffffff', '#eeeeee'];
       $title_colors = ['#617d8a', '#708a95', '#8197a1'];
@@ -62,6 +62,7 @@ class DemoContentSeeder extends Seeder
           $sitePage->account_id = $account_id;
           $sitePage->name = str_replace('.', '', $faker->sentence($nbWords = 3, $variableNbWords = true));
           $sitePage->content = [
+            'content' => '<div><font size="3">' . implode('</font></div><font size="3"><br></font><div><font size="3">', $faker->paragraphs($nb = 3, $asText = false)) . '</font></div>'
           ];
           $sitePage->created_by = $created_by;
 

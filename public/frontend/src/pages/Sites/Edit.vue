@@ -30,7 +30,7 @@ Site
               >
                 <q-list style="min-width: 120px">
                   <q-item clickable>
-                    <q-item-section>Open site</q-item-section>
+                    <q-item-section>Open site in new window</q-item-section>
                   </q-item>
                   <q-item clickable>
                     <q-item-section>Show QR code</q-item-section>
@@ -46,7 +46,7 @@ Site
           <q-separator />
           <q-tabs
               v-model="siteTab"
-              class="text-dark bg-blue-grey-1"
+              class="text-blue-grey-9 bg-blue-grey-1"
               active-color="primary"
               indicator-color="primary"
               align="justify"
@@ -64,6 +64,7 @@ Site
                 <q-tab-panel name="pages">
                   <div class="fit q-pa-xs q-gutter-md row">
                     <q-tree
+                      style="user-select: none"
                       :nodes="site.pages"
                       :selected.sync="globals.currentPage"
                       selected-color="primary"
@@ -270,7 +271,7 @@ Page
           <q-separator />
           <q-tabs
             v-model="pageTab"
-            class="text-dark bg-blue-grey-1"
+            class="text-blue-grey-9 bg-blue-grey-1"
             active-color="primary"
             indicator-color="primary"
             align="justify"

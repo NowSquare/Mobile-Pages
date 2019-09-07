@@ -6,7 +6,7 @@
           <q-card-section>
             <div class="row items-center no-wrap">
               <div class="col">
-                <div class="text-h5">{{ $t('log_in') }}</div>
+                <div class="text-h5">Log in</div>
               </div>
             </div>
 
@@ -36,7 +36,7 @@
                 :error="form.email.error"
                 :error-message="form.email.errorMsg"
                 type="email"
-                :label="$t('email_address')"
+                label="E-mail address"
                 @keyup="resetValidation($event)"
               >
                 <template v-slot:prepend>
@@ -51,7 +51,7 @@
                 :error="form.password.error"
                 :error-message="form.password.errorMsg"
                 type="password"
-                :label="$t('password')"
+                label="Password"
                 @keyup="resetValidation($event)"
               >
                 <template v-slot:prepend>
@@ -59,7 +59,7 @@
                 </template>
 
                 <template v-slot:append>
-                  <q-btn flat no-caps :to="{ name: 'password.email' }">{{ $t('forgot_password') }}</q-btn>
+                  <q-btn flat no-caps :to="{ name: 'home' }">Forgot password?</q-btn>
                 </template>
               </q-input>
 
@@ -77,6 +77,10 @@
           </q-form>
         </q-card>
       </div>
+      <q-card-actions class="q-pa-none q-pt-md">
+        <q-space />
+        <q-btn flat no-caps color="white">Create a new account</q-btn>
+      </q-card-actions>
     </div>
   </q-page>
 </template>
@@ -112,10 +116,7 @@ export default {
   methods: {
     onSubmit () {
       this.loading = true
-      let redirect = this.$auth.redirect()
-
       this.$auth.login({
-        redirect: { name: redirect ? redirect.from.name : 'sites.overview', query: redirect ? redirect.from.query : null },
         rememberMe: this.form.remember,
         fetchUser: true,
         params: {
@@ -129,6 +130,14 @@ export default {
             icon: 'done',
             message: 'Login successful'
           })
+
+          let redirectAfterLogin = 'edit'
+          switch (parseInt(this.$auth.user().role)) {
+            case 2:
+              redirectAfterLogin = 'edit'
+              break
+          }
+          this.$router.push({ name: redirectAfterLogin })
         },
         error: function (err) {
           let res = err.response.data
