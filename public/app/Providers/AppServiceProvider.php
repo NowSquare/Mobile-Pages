@@ -27,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Override filesystem config for media url
+        config(['filesystems.disks.media.url' => request()->getSchemeAndHttpHost() . '/media']);
+
         $account = null;
 
         if (! $this->app->runningInConsole() && \Platform\Controllers\InstallationController::isInstalled() && \Request::segment(1) != 'install' && \Schema::hasTable('users')) {

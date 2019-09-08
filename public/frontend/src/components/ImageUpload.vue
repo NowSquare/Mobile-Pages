@@ -1,22 +1,32 @@
 <template>
   <div>
-    <q-field :label="label" stack-label borderless class="q-mt-xs">
-      <template v-slot:control>
-        <div class="row full-width">
-          <div class="col q-mr-sm">
-            <q-btn color="white" text-color="black" class="full-width" size="md" icon="add_photo_alternate" label="Upload image" @click="showUploader =! showUploader" no-caps />
-          </div>
-          <div class="col q-ml-sm">
-            <q-btn v-if="imgSrc !== ''" color="red" class="full-width" size="md" @click="$refs.uploader.reset(); imgSrc = ''" label="Delete image" no-caps />
-          </div>
-        </div>
+    <q-input
+        :label="label"
+        v-model="imgName"
+        readonly
+        class="q-mb-lg"
+      >
+      <template v-slot:append>
+        <q-btn round color="white" text-color="grey-9" flat size="sm" icon="mdi-image-plus" @click="uploadFile">
+          <q-tooltip>
+            Upload image
+          </q-tooltip>
+        </q-btn>
+        <q-btn round :disabled="imgName === null || imgName === ''" color="white" text-color="grey-9" flat size="sm" icon="delete" @click="removeUpload">
+          <q-tooltip>
+            Delete image
+          </q-tooltip>
+        </q-btn>
       </template>
-    </q-field>
+    </q-input>
+
     <div class="row" v-show="showUploader">
       <div class="col">
         <q-uploader
           @added="uploadAdded"
           @removed="uploadRemoved"
+          :name="name"
+          :id="name"
           ref="uploader"
           label="Upload new image"
           accept=".jpg, image/*"
@@ -40,6 +50,7 @@ export default {
   },
   data () {
     return {
+      imgName: null,
       showUploader: false,
       uploadImgSrc: null,
       uploadImgSrcOld: null
@@ -55,10 +66,26 @@ export default {
       default: null,
       required: false,
       type: String
+    },
+    name: {
+      default: 'file',
+      required: false,
+      type: String
+    },
+    defaultValue: {
+      default: '',
+      required: false,
+      type: String
+    },
+    defaultToOriginal: {
+      default: false,
+      required: false,
+      type: Boolean
     }
   },
   created () {
     this.uploadImgSrcOld = this.imgSrc
+    this.imgName = this.defaultValue
   },
   watch: {
     uploadImgSrc: function (newVal, oldVal) {
@@ -66,11 +93,25 @@ export default {
     }
   },
   methods: {
+    uploadFile () {
+      this.$refs.uploader.removeQueuedFiles()
+      this.$nextTick(() => {
+        this.$refs.uploader.pickFiles()
+      })
+    },
+    removeUpload () {
+      this.$refs.uploader.reset()
+      this.$refs.uploader.removeQueuedFiles()
+      this.imgName = null
+      this.imgSrc = (this.defaultToOriginal) ? this.uploadImgSrcOld : ''
+    },
     uploadAdded (files) {
       this.imgSrc = files[0].__img.src
+      this.imgName = files[0].name
     },
     uploadRemoved (files) {
       this.imgSrc = this.uploadImgSrcOld
+      this.imgName = null
     }
   },
   computed: {

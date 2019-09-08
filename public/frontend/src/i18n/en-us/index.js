@@ -15,5 +15,7 @@ export default {
   new_site: 'New site',
   profile: 'Profile',
   name: 'Name',
+  change_password: 'Change password',
+  change_password_hint: 'Leave empty if you don\'t want to change the password.',
   current_password: 'Current password'
 }

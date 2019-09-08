@@ -11,6 +11,7 @@ return [
     "current_password_incorrect" => "The current password is incorrect.",
     "saved_successfully" => "Changes saved successfully",
     "processing_error" => "Something went wrong, please contant the system admin",
+    "demo_warning" => "The system is in demo mode.",
 
     /*
      |--------------------------------------------------------------------------

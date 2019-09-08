@@ -6,7 +6,7 @@
           <q-card-section>
             <div class="row items-center no-wrap">
               <div class="col">
-                <div class="text-h5">Log in</div>
+                <div class="text-h5">Reset password</div>
               </div>
             </div>
 
@@ -28,21 +28,9 @@
 
           <q-form ref="frm" @submit.prevent.stop="onSubmit" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
 
-            <q-card-section>
-              <q-input
-                class="q-mb-sm"
-                name="email"
-                v-model="form.email.value"
-                :error="form.email.error"
-                :error-message="form.email.errorMsg"
-                type="email"
-                label="E-mail address"
-                @keyup="resetValidation($event)"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="mdi-at" />
-                </template>
-              </q-input>
+            <q-card-section v-if="!invalidToken">
+
+              <p>Enter a new password for your account.</p>
 
               <q-input
                 class="q-mb-sm"
@@ -50,36 +38,33 @@
                 v-model="form.password.value"
                 :error="form.password.error"
                 :error-message="form.password.errorMsg"
-                type="password"
+                :type="isPwd ? 'password' : 'text'"
                 label="Password"
                 @keyup="resetValidation($event)"
               >
                 <template v-slot:prepend>
                   <q-icon name="mdi-key-variant" />
                 </template>
-
                 <template v-slot:append>
-                  <q-btn flat no-caps :to="{ name: 'home' }">Forgot password?</q-btn>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
                 </template>
               </q-input>
 
-              <q-checkbox
-                v-model="form.remember"
-                label="Keep me logged in"
-                color="blue-grey-8"
-              />
-
             </q-card-section>
 
-            <q-card-actions>
-              <q-btn type="submit" :loading="loading" color="green" class="full-width no-border-radius shadow-0" size="lg">Login</q-btn>
+            <q-card-actions v-if="!invalidToken">
+              <q-btn type="submit" :loading="loading" color="green" class="full-width no-border-radius shadow-0" size="lg">Update password</q-btn>
             </q-card-actions>
           </q-form>
         </q-card>
       </div>
       <q-card-actions class="q-pa-none q-pt-md">
         <q-space />
-        <q-btn flat no-caps color="white">Create a new account</q-btn>
+        <q-btn flat no-caps color="white" :to="{ name: 'login' }">Back to login</q-btn>
       </q-card-actions>
     </div>
   </q-page>
@@ -92,14 +77,11 @@ export default {
   data () {
     return {
       loading: false,
-      successMsg: null, /* You can now log in. */
+      invalidToken: false,
+      successMsg: null,
       errorMsg: null,
+      isPwd: true,
       form: {
-        email: {
-          value: null,
-          error: false,
-          errorMsg: null
-        },
         password: {
           value: null,
           error: false,
@@ -109,37 +91,43 @@ export default {
       }
     }
   },
-  mounted () {
-  },
-  watch: {
+  created () {
+    let token = this.$route.params.token
+    this.$axios
+      .post('/auth/password/reset/validate-token', {
+        locale: this.$i18n.locale,
+        token: token
+      })
+      .then(res => {
+        if (res.data.status === 'success') {
+          this.invalidToken = false
+        } else {
+          this.invalidToken = true
+          this.errorMsg = 'The token is invalid, already used or expired.'
+        }
+      })
+      .catch(err => {
+        if (typeof err.response.data !== 'undefined') {
+          this.invalidToken = true
+          this.errorMsg = 'The token is invalid, already used or expired.'
+        }
+      })
   },
   methods: {
     onSubmit () {
       this.loading = true
-      this.$auth.login({
-        rememberMe: this.form.remember,
-        fetchUser: true,
-        params: {
-          locale: this.$i18n.locale,
-          email: this.form.email.value,
-          password: this.form.password.value,
-          remember: this.form.remember
-        },
-        success: function (res) {
-          this.$q.notify({
-            icon: 'done',
-            message: 'Login successful'
-          })
 
-          let redirectAfterLogin = 'edit'
-          switch (parseInt(this.$auth.user().role)) {
-            case 2:
-              redirectAfterLogin = 'edit'
-              break
+      this.$axios.post('/auth/password/update', {
+        locale: this.$i18n.locale,
+        password: this.form.password.value,
+        token: this.$route.params.token
+      })
+        .then(response => {
+          if (response.data.status === 'success') {
+            this.$router.push({ name: 'login', params: { successResetUpdateRedirect: true } })
           }
-          this.$router.push({ name: redirectAfterLogin })
-        },
-        error: function (err) {
+        })
+        .catch(err => {
           let res = err.response.data
           if (typeof res.error !== 'undefined') {
             this.errorMsg = res.error
@@ -150,17 +138,14 @@ export default {
               this.form[field].errorMsg = res.errors[field][0]
             }
           }
-          this.loading = false
-        }
-      })
+        })
+        .finally(() => { this.loading = false })
     },
     resetValidation (event) {
       if (typeof event.target.name !== 'undefined') {
         this.form[event.target.name].error = false
       }
     }
-  },
-  computed: {
   }
 }
 </script>

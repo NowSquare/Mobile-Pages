@@ -2,9 +2,10 @@
   <q-layout view="lHh Lpr fff">
     <q-header
       bordered
-      class="bg-white text-grey-8"
+      height-hint="57"
+      class="bg-grey-2 text-grey-9"
     >
-      <q-toolbar>
+      <q-toolbar style="height: 57px">
         <q-btn
           v-if="$auth.check()"
           flat
@@ -20,9 +21,7 @@
           <span class="q-ml-sm">{{ window.config.app_name }}</span>
         </q-toolbar-title>
 
-        <q-space />
-
-        <div class="q-gutter-sm row items-center no-wrap" v-if="$auth.check() && $q.screen.lt.lg">
+        <div class="q-gutter-sm row items-center no-wrap" v-if="$auth.check() && !leftDrawerOpen">
           <q-btn flat :label="$t('sites')" exact :to="{ name: 'sites.overview' }" icon="apps"/>
           <q-btn flat :label="$t('new_site')" exact :to="{ name: 'site.new' }" icon="add"/>
         </div>
@@ -30,7 +29,7 @@
         <q-space />
 
         <div class="q-gutter-sm row items-center no-wrap q-mr-sm" v-if="!$auth.check()">
-          <q-btn flat :label="$t('home')" :to="{ name: 'home' }" icon="home"/>
+          <q-btn flat :label="$t('home')" :to="{ name: 'home' }"/>
           <q-btn flat :label="$t('login')" :to="{ name: 'login' }" icon="mdi-login-variant"/>
         </div>
 
@@ -59,7 +58,7 @@
       v-if="$auth.check()"
       v-model="leftDrawerOpen"
       :width="250"
-      :breakpoint="1439"
+      :breakpoint="1023"
       content-class="bg-grey-10 text-grey-1"
       content-style="pointer-events:all"
     >
@@ -126,7 +125,7 @@ export default {
     this.$root.$confirm = this.$refs.confirm.open
   },
   created () {
-    this.leftDrawerOpen = !this.$q.screen.lt.lg
+    this.leftDrawerOpen = !this.$q.screen.lt.md
   },
   data () {
     return {

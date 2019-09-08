@@ -97,7 +97,8 @@ export default {
         })
         .then(response => {
           if (response.data.status === 'success') {
-            this.$router.push({ name: 'login', params: { successResetRedirect: true } })
+            this.form.email.value = ''
+            this.successMsg = 'An email has been sent to reset your password. Check your spam folder.'
           } else if (typeof response.data.error !== 'undefined') {
             this.errorMsg = response.data.error
           }

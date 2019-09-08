@@ -87,6 +87,7 @@ export default {
   },
   data () {
     return {
+      successResetUpdateRedirect: false,
       loading: false,
       successMsg: null, /* You can now log in. */
       errorMsg: null,
@@ -105,9 +106,12 @@ export default {
       }
     }
   },
-  mounted () {
-  },
-  watch: {
+  created () {
+    this.successResetUpdateRedirect = this.$route.params.successResetUpdateRedirect || false
+
+    if (this.successResetUpdateRedirect) {
+      this.successMsg = 'Your password has been successfully reset. You can now log in with your new password.'
+    }
   },
   methods: {
     onSubmit () {
@@ -150,8 +154,6 @@ export default {
         this.form[event.target.name].error = false
       }
     }
-  },
-  computed: {
   }
 }
 </script>

@@ -37,7 +37,7 @@ class AuthController extends \App\Http\Controllers\Controller
       app()->setLocale($locale);
 
       $v = Validator::make($request->all(), [
-        'email' => 'required|email|max:32',
+        'email' => 'required|email|max:48',
         'password' => 'required|min:6|max:24'
       ]);
 
@@ -100,7 +100,7 @@ class AuthController extends \App\Http\Controllers\Controller
      */
     public function passwordReset(Request $request) {
       $v = Validator::make($request->all(), [
-        'email' => 'required|email|max:32'
+        'email' => 'required|email|max:48'
       ]);
 
       if ($v->fails()) {
@@ -135,7 +135,11 @@ class AuthController extends \App\Http\Controllers\Controller
         $email->subject = trans('app.reset_password_mail_subject');
         $email->body_top = trans('app.reset_password_mail_top');
         $email->cta_label = trans('app.reset_password_mail_cta');
-        $email->cta_url = url('go#/password/reset/' . $token);
+        if (env('APP_ENV') === 'local') {
+          $email->cta_url = 'http://localhost:8080/#/auth/password/reset/' . $token;
+        } else {
+          $email->cta_url = url('/#/auth/password/reset/' . $token);
+        }
         $email->body_bottom = trans('app.reset_password_mail_bottom');
 
         Mail::send(new \App\Mail\SendMail($email));
@@ -251,7 +255,7 @@ class AuthController extends \App\Http\Controllers\Controller
       $account = app()->make('account');
 
       if (env('APP_DEMO', false) === true && (auth()->user()->id == 1 || auth()->user()->id == 2)) {
-        return response()->json(['status' => 'error', 'error' => 'demo'], 422);
+        return response()->json(['status' => 'error', 'msg' => trans('app.demo_warning')], 422);
       }
 
       $locale = request('locale', config('system.default_language'));
@@ -260,7 +264,7 @@ class AuthController extends \App\Http\Controllers\Controller
       $v = Validator::make($request->all(), [
         'current_password' => 'required|min:8|max:24',
         'name' => 'required|min:2|max:32',
-        'email' => ['required', 'email', 'max:32', Rule::unique('users')->where(function ($query) use ($account) {
+        'email' => ['required', 'email', 'max:48', Rule::unique('users')->where(function ($query) use ($account) {
             return $query->where('account_id', $account->id)->where('id', '<>', auth()->user()->id);
           })
         ],
@@ -296,10 +300,10 @@ class AuthController extends \App\Http\Controllers\Controller
 
       // Update avatar
       if (json_decode($request->avatar_media_changed) === true) {
-        $file = $request->file('avatar');
+        $file = $request->avatar;   
         if ($file !== null) {
           auth()->user()
-            ->addMedia($file)
+            ->addMediaFromBase64($file)
             ->sanitizingFileName(function($fileName) {
               return strtolower(str_replace(['#', '/', '\\', ' '], '-', $fileName));
             })
@@ -312,7 +316,8 @@ class AuthController extends \App\Http\Controllers\Controller
 
       return response()->json([
         'status' => 'success',
-        'user' => $this->user(false)
+        'user' => $this->user(false),
+        'msg' => trans('app.saved_successfully')
       ], 200);
     }
 
@@ -341,6 +346,8 @@ class AuthController extends \App\Http\Controllers\Controller
         'timezone' => $user->timezone,
         'currency' => $user->currency
       ];
+
+      $return['avatar_name'] = ($user->getFirstMediaUrl('avatar') !== '') ? basename($user->avatar) : '';
 
       if ($returnResponse) {
         return response()->json([

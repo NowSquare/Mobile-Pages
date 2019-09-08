@@ -75,11 +75,11 @@ class Localization extends \App\Http\Controllers\Controller {
 
       $currencies = $currencyRepository->getAll($locale);
 
-      $return = [];
+      $response = [];
 
       foreach ($currencies as $currency_code => $currency) {
         if ($keyVal) {
-          $return[$currency_code] = $currency->getName() . ' (' . $currency_code . ')';
+          $response[$currency_code] = $currency->getName() . ' (' . $currency_code . ')';
         } else {
           $response[] = [
             'label' => $currency->getName() . ' (' . $currency_code . ')',
@@ -87,7 +87,7 @@ class Localization extends \App\Http\Controllers\Controller {
           ];
         }
       }
-      return response()->json($return, 200);
+      return response()->json($response, 200);
     }
 
     /**

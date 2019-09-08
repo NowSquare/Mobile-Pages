@@ -32,7 +32,6 @@ Route::group(['middleware' => 'auth:api'], function() {
 
 // App authorization routes
 Route::group(['prefix' => 'auth'], function () {
-  Route::post('register', '\Platform\Controllers\App\AuthController@register');
   Route::post('login', '\Platform\Controllers\App\AuthController@login');
   Route::get('refresh', '\Platform\Controllers\App\AuthController@refresh');
   Route::post('password/reset', '\Platform\Controllers\App\AuthController@passwordReset');

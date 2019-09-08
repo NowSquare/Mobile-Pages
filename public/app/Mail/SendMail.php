@@ -20,8 +20,8 @@ class SendMail extends Mailable
     {
         $this->app_name = (isset($email->app_name)) ? $email->app_name : config('app.name');
         $this->app_url = (isset($email->app_url)) ? $email->app_url : config('app.url');
-        $this->from_name = (isset($email->from_name)) ? $email->from_name : config('system.mail_name_from');
-        $this->from_email = (isset($email->from_email)) ? $email->from_email : config('system.mail_address_from');
+        $this->from_name = (isset($email->from_name)) ? $email->from_name : config('general.mail_name_from');
+        $this->from_email = (isset($email->from_email)) ? $email->from_email : config('general.mail_address_from');
         $this->to_name = $email->to_name;
         $this->to_email = $email->to_email;
         $this->subject = $email->subject;

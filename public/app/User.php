@@ -218,7 +218,7 @@ class User extends Authenticatable implements JWTSubject, HasMedia
      */
     public function getAvatarAttribute() {
       if ($this->getFirstMediaUrl('avatar') !== '') {
-        return $this->getFirstMediaUrl('avatar', 'avatar');
+        return request()->getSchemeAndHttpHost() . $this->getFirstMediaUrl('avatar', 'avatar');
       } else {
         return (string) \Avatar::create(strtoupper($this->name))->toBase64();
       }
