@@ -1,11 +1,12 @@
 <template>
   <div>
     <q-input
-        :label="label"
-        v-model="imgName"
-        readonly
-        class="q-mb-lg"
-      >
+      :label="label"
+      v-model="imgName"
+      :ref="name + 'FileName'"
+      readonly
+      class="q-mb-lg"
+    >
       <template v-slot:append>
         <q-btn round color="white" text-color="grey-9" flat size="sm" icon="mdi-image-plus" @click="uploadFile">
           <q-tooltip>
@@ -85,7 +86,7 @@ export default {
   },
   created () {
     this.uploadImgSrcOld = this.imgSrc
-    this.imgName = this.defaultValue
+    this.imgName = (this.vModel !== null && this.vModel !== '' && !this.vModel.startsWith('data')) ? this.vModel.split('/').reverse()[0] : this.defaultValue
   },
   watch: {
     uploadImgSrc: function (newVal, oldVal) {
@@ -108,6 +109,7 @@ export default {
     uploadAdded (files) {
       this.imgSrc = files[0].__img.src
       this.imgName = files[0].name
+      this.$emit('filename', this.imgName)
     },
     uploadRemoved (files) {
       this.imgSrc = this.uploadImgSrcOld

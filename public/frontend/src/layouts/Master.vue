@@ -131,7 +131,7 @@ export default {
     return {
       leftDrawerOpen: false,
       links1: [
-        { icon: 'home', text: this.$t('home'), to: 'home' },
+        /* { icon: 'home', text: this.$t('home'), to: 'home' }, */
         { icon: 'apps', text: this.$t('sites'), to: 'sites.overview' },
         { icon: 'add', text: this.$t('new_site'), to: 'site.new' }
       ]

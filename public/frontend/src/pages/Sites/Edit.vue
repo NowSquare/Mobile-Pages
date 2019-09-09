@@ -8,218 +8,229 @@ Site
     <div class="col bg-grey-1" v-show="$q.screen.gt.sm">
       <div class="flex fit relative-position">
         <div class="full-width" style="padding-bottom: 100px;" v-show="!siteLoading">
-          <q-toolbar>
-            <q-toolbar-title class="text-body1 text-center"> {{ site.pages[0].name }}<span v-if="siteChangesDetected"> *</span></q-toolbar-title>
-            <q-btn flat round dense v-if="siteChangesDetected" @click="siteChangesDetected = false">
-              <q-icon name="save" class="text-grey-9" />
-              <q-tooltip>
-              {{ $t('save_changes') }}
-              </q-tooltip>
-            </q-btn>
-            <q-btn flat round dense v-if="siteChangesDetected" @click="siteChangesDetected = false">
-              <q-icon name="undo" class="text-grey-9" />
-              <q-tooltip>
-              {{ $t('undo_changes') }}
-              </q-tooltip>
-            </q-btn>
-            <q-btn flat round dense>
-              <q-icon name="more_vert" class="text-grey-9" />
-              <q-menu
-                transition-show="jump-down"
-                transition-hide="jump-up"
+          <q-form id="frmSite" @submit.prevent.stop="saveSite" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" class="fit">
+            <q-toolbar>
+              <q-toolbar-title class="text-body1 text-center"> {{ site.pages[0].name }}<span v-if="siteChangesDetected"> *</span></q-toolbar-title>
+              <q-btn flat round dense v-if="siteChangesDetected" type="submit">
+                <q-icon name="save" class="text-grey-9" />
+                <q-tooltip>
+                {{ $t('save_changes') }}
+                </q-tooltip>
+              </q-btn>
+              <q-btn flat round dense v-if="siteChangesDetected" @click="undoSiteChanges">
+                <q-icon name="undo" class="text-grey-9" />
+                <q-tooltip>
+                {{ $t('undo_changes') }}
+                </q-tooltip>
+              </q-btn>
+              <q-btn flat round dense>
+                <q-icon name="more_vert" class="text-grey-9" />
+                <q-menu
+                  transition-show="jump-down"
+                  transition-hide="jump-up"
+                >
+                  <q-list style="min-width: 120px">
+                    <q-item clickable>
+                      <q-item-section>Open site in new window</q-item-section>
+                    </q-item>
+                    <q-item clickable>
+                      <q-item-section>Show QR code</q-item-section>
+                    </q-item>
+                    <q-separator />
+                    <q-item clickable class="text-red">
+                      <q-item-section>Delete site</q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-btn>
+            </q-toolbar>
+            <q-separator />
+            <q-tabs
+                v-model="siteTab"
+                class="text-blue-grey-9 bg-blue-grey-1"
+                active-color="primary"
+                indicator-color="primary"
+                align="justify"
+                narrow-indicator
               >
-                <q-list style="min-width: 120px">
-                  <q-item clickable>
-                    <q-item-section>Open site in new window</q-item-section>
-                  </q-item>
-                  <q-item clickable>
-                    <q-item-section>Show QR code</q-item-section>
-                  </q-item>
-                  <q-separator />
-                  <q-item clickable class="text-red">
-                    <q-item-section>Delete site</q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
-            </q-btn>
-          </q-toolbar>
-          <q-separator />
-          <q-tabs
-              v-model="siteTab"
-              class="text-blue-grey-9 bg-blue-grey-1"
-              active-color="primary"
-              indicator-color="primary"
-              align="justify"
-              narrow-indicator
-            >
-            <q-tab name="pages" label="Pages" />
-            <q-tab name="add_page" label="Add Page" />
-            <q-tab name="design" label="Design" />
-            <q-tab name="settings" label="Settings" />
-          </q-tabs>
-          <q-separator />
-          <div class="fit">
-            <q-scroll-area class="fit">
-              <q-tab-panels v-model="siteTab" animated keep-alive>
-                <q-tab-panel name="pages">
-                  <div class="fit q-pa-xs q-gutter-md row">
-                    <q-tree
-                      style="user-select: none"
-                      :nodes="site.pages"
-                      :selected.sync="globals.currentPage"
-                      selected-color="primary"
-                      node-key="uuid"
-                      label-key="name"
-                      :expanded.sync="treeExpandedKeys"
-                      @update:selected="checkForPageChanges"
-                    />
-                  </div>
-                </q-tab-panel>
-                <q-tab-panel name="add_page">
-                  <div class="fit q-pa-xs q-gutter-lg row">
-                    <q-btn class="site-page" round flat :color="item.color" stack no-caps size="32px" v-for="(item, index) in pageModules" :key="index">
-                      <q-icon size="28px" class="q-mb-xs" :name="item.icon" />
-                      <div class="title" style="line-height: 18px">{{ item.text }}</div>
-                      <q-tooltip>
-                      {{ item.description }}
-                      </q-tooltip>
-                    </q-btn>
-                  </div>
-                </q-tab-panel>
-                <q-tab-panel name="design" keep-alive>
-                  <q-list bordered class="rounded-borders">
+              <q-tab name="pages" label="Pages" />
+              <q-tab name="add_page" label="Add Page" />
+              <q-tab name="design" label="Design" />
+              <q-tab name="settings" label="Settings" />
+            </q-tabs>
+            <q-separator />
+            <div class="fit">
+              <q-scroll-area class="fit">
+                <q-tab-panels v-model="siteTab" animated keep-alive v-if="!leftColumnLoading">
+                  <q-tab-panel name="pages">
+                    <div class="fit q-pa-xs q-gutter-md row">
+<!--
+---------------------------------------------------------------------------------------------------
+Site - Tree
+---------------------------------------------------------------------------------------------------
+-->
+                      <q-tree
+                        style="user-select: none"
+                        :nodes="site.pages"
+                        :selected.sync="globals.currentPage"
+                        selected-color="primary"
+                        node-key="uuid"
+                        label-key="name"
+                        :expanded.sync="treeExpandedKeys"
+                        @update:selected="checkForPageChanges"
+                      />
+                    </div>
+                  </q-tab-panel>
+                  <q-tab-panel name="add_page">
+                    <div class="fit q-pa-xs q-gutter-lg row">
+                      <q-btn class="site-page" round flat :color="item.color" stack no-caps size="32px" v-for="(item, index) in pageModules" :key="index">
+                        <q-icon size="28px" class="q-mb-xs" :name="item.icon" />
+                        <div class="title" style="line-height: 18px">{{ item.text }}</div>
+                        <q-tooltip>
+                        {{ item.description }}
+                        </q-tooltip>
+                      </q-btn>
+                    </div>
+                  </q-tab-panel>
+                  <q-tab-panel name="design" keep-alive>
+                    <q-list bordered class="rounded-borders">
 <!--
 ---------------------------------------------------------------------------------------------------
 Site - Design tab - Background
 ---------------------------------------------------------------------------------------------------
 -->
-                    <q-expansion-item
-                        v-model="expandedSiteDesignBackground"
-                        dense-toggle
-                        label="Site"
-                        class="text-subtitle1"
-                        header-class="bg-grey-1"
-                      >
-                      <q-separator />
-                      <div class="q-pa-lg">
+                      <q-expansion-item
+                          v-model="expandedSiteDesignBackground"
+                          dense-toggle
+                          label="Site"
+                          class="text-subtitle1"
+                          header-class="bg-grey-1"
+                        >
+                        <q-separator />
+                        <div class="q-pa-lg">
 
-                        <ColorPicker
-                          label="Site background color"
-                          v-model="site.design.bgColor"
-                        />
+                          <ColorPicker
+                            label="Site background color"
+                            v-model="site.design.bgColor"
+                          />
 
-                        <ColorPicker
-                          label="Site text color"
-                          v-model="site.design.textColor"
-                        />
+                          <ColorPicker
+                            label="Site text color"
+                            v-model="site.design.textColor"
+                          />
 
-                        <ImageUpload
-                          label="Background image"
-                          v-model="site.design.bgImg"
-                          id="imgSiteDesignBackground"
-                        />
+                          <ImageUpload
+                            label="Background image"
+                            v-model="site.design.bgImg"
+                            id="imgSiteDesignBackground"
+                          />
 
-                      </div>
-                    </q-expansion-item>
+                        </div>
+                      </q-expansion-item>
 <!--
 ---------------------------------------------------------------------------------------------------
 Site - Design tab - Header
 ---------------------------------------------------------------------------------------------------
 -->
-                    <q-separator />
-                    <q-expansion-item
-                        v-model="expandedSiteDesignHeader"
-                        dense-toggle
-                        label="Header"
-                        class="text-subtitle1"
-                        header-class="bg-grey-1"
-                      >
                       <q-separator />
-                      <div class="q-pa-lg">
+                      <q-expansion-item
+                          v-model="expandedSiteDesignHeader"
+                          dense-toggle
+                          label="Header"
+                          class="text-subtitle1"
+                          header-class="bg-grey-1"
+                        >
+                        <q-separator />
+                        <div class="q-pa-lg">
 
-                        <ColorPicker
-                          label="Header background color"
-                          v-model="site.design.headerBgColor"
-                        />
+                          <ColorPicker
+                            label="Header background color"
+                            v-model="site.design.headerBgColor"
+                          />
 
-                        <ColorPicker
-                          label="Header text color"
-                          v-model="site.design.headerTextColor"
-                        />
+                          <ColorPicker
+                            label="Header text color"
+                            v-model="site.design.headerTextColor"
+                          />
 
-                      </div>
-                    </q-expansion-item>
+                        </div>
+                      </q-expansion-item>
 <!--
 ---------------------------------------------------------------------------------------------------
 Site - Design tab - Title toolbar
 ---------------------------------------------------------------------------------------------------
 -->
-                    <q-separator />
-                    <q-expansion-item
-                        v-model="expandedSiteDesignTitleToolbar"
-                        dense-toggle
-                        label="Title toolbar"
-                        class="text-subtitle1"
-                        header-class="bg-grey-1"
-                      >
                       <q-separator />
-                      <div class="q-pa-lg">
+                      <q-expansion-item
+                          v-model="expandedSiteDesignTitleToolbar"
+                          dense-toggle
+                          label="Title toolbar"
+                          class="text-subtitle1"
+                          header-class="bg-grey-1"
+                        >
+                        <q-separator />
+                        <div class="q-pa-lg">
 
-                        <ColorPicker
-                          label="Toolbar background color"
-                          v-model="site.design.titleBarBgColor"
-                        />
+                          <ColorPicker
+                            label="Toolbar background color"
+                            v-model="site.design.titleBarBgColor"
+                          />
 
-                        <ColorPicker
-                          label="Toolbar text color"
-                          v-model="site.design.titleBarTextColor"
-                        />
+                          <ColorPicker
+                            label="Toolbar text color"
+                            v-model="site.design.titleBarTextColor"
+                          />
 
-                      </div>
-                    </q-expansion-item>
+                        </div>
+                      </q-expansion-item>
 <!--
 ---------------------------------------------------------------------------------------------------
 Site - Design tab - Side navigation
 ---------------------------------------------------------------------------------------------------
 -->
-                    <q-separator />
-                    <q-expansion-item
-                        v-model="expandedSiteDesignSideNav"
-                        dense-toggle
-                        label="Side navigation"
-                        class="text-subtitle1"
-                        header-class="bg-grey-1"
-                      >
                       <q-separator />
-                      <div class="q-pa-lg">
+                      <q-expansion-item
+                          v-model="expandedSiteDesignSideNav"
+                          dense-toggle
+                          label="Side navigation"
+                          class="text-subtitle1"
+                          header-class="bg-grey-1"
+                        >
+                        <q-separator />
+                        <div class="q-pa-lg">
 
-                        <ColorPicker
-                          label="Side navigation background color"
-                          v-model="site.design.drawerBgColor"
-                        />
+                          <ColorPicker
+                            label="Side navigation background color"
+                            v-model="site.design.drawerBgColor"
+                          />
 
-                        <ColorPicker
-                          label="Side navigation text color"
-                          v-model="site.design.drawerTextColor"
-                        />
+                          <ColorPicker
+                            label="Side navigation text color"
+                            v-model="site.design.drawerTextColor"
+                          />
 
-                      </div>
-                    </q-expansion-item>
-                  </q-list>
-                </q-tab-panel>
-                <q-tab-panel name="settings">
-                  <q-input
-                    v-model="site.pages[0].name"
-                    label="Site name"
-                    maxlength="64"
-                  />
-                </q-tab-panel>
-              </q-tab-panels>
-              <q-separator />
-            </q-scroll-area>
-          </div>
+                        </div>
+                      </q-expansion-item>
+                    </q-list>
+                  </q-tab-panel>
+                  <q-tab-panel name="settings">
+                    <q-input
+                      v-model="site.pages[0].name"
+                      label="Site name"
+                      ref="siteName"
+                      name="siteName"
+                      maxlength="64"
+                      :error="errorBag.siteName.error"
+                      :error-message="errorBag.siteName.errorMsg"
+                    />
+                  </q-tab-panel>
+                </q-tab-panels>
+                <q-separator />
+              </q-scroll-area>
+            </div>
+          </q-form>
         </div>
-        <q-inner-loading :showing="siteLoading"></q-inner-loading>
+        <q-inner-loading :showing="leftColumnLoading"></q-inner-loading>
       </div>
     </div>
     <q-separator vertical />
@@ -304,11 +315,13 @@ Site - Content tab
                   <ImageUpload
                     ref="imgAboveContent"
                     label="Image above content"
-                    :key="sitePage.uuid"
                     name="imgAboveContent"
                     v-model="sitePage.content.imgAboveContent"
+                    :key="sitePage.uuid"
                     :error="errorBag.imgAboveContent.error"
                     :error-message="errorBag.imgAboveContent.errorMsg"
+                    @filename="(val) => { sitePage.content.imgAboveContentFileName = val }"
+                    :default-value="sitePage.content.imgAboveContentFileName"
                   />
 
                   <Editor
@@ -374,6 +387,7 @@ export default {
       siteChangesDetected: false,
       pageChangesDetected: false,
       siteLoading: true,
+      leftColumnLoading: true,
       rightColumnLoading: true,
       siteTab: 'pages',
       pageTab: 'content',
@@ -422,7 +436,6 @@ export default {
     this.globals.uuid = this.$route.params.uuid || null
     this.oldGlobals = this.copyObject(this.globals)
 
-    var that = this
     this.$axios
       .get('site', {
         params: {
@@ -434,23 +447,25 @@ export default {
           /* Site not found, redirect back */
           this.$router.push({ name: 'sites.overview' })
         } else {
-          that.site = response.data
-          that.oldSite = this.copyObject(that.site)
-          that.oldSitePages = this.copyObject(that.site.pages[0].children)
-          that.undoSitePages = this.copyObject(that.site.pages[0].children)
-          that.siteLoading = false
-          that.rightColumnLoading = false
-          that.globals.currentPage = that.site.pages[0].children[0].uuid || null
-          that.currentPage = that.site.pages[0].children[0].uuid || null
+          this.site = response.data
+          this.oldSite = this.copyObject(this.site)
+          this.oldSitePages = this.copyObject(this.site.pages[0].children)
+          this.undoSitePages = this.copyObject(this.site.pages[0].children)
+          this.globals.currentPage = this.site.pages[0].children[0].uuid || null
+          this.currentPage = this.site.pages[0].children[0].uuid || null
 
-          /* Fill error bag for form validation, name always exists */
+          /* Fill error bag for form validation, first fields that always exists */
           this.errorBag.name = {
             error: false,
             errorMsg: null
           }
+          this.errorBag.siteName = {
+            error: false,
+            errorMsg: null
+          }
           let fieldFound = []
-          for (let page in that.oldSitePages) {
-            for (let content in that.oldSitePages[page].content) {
+          for (let page in this.oldSitePages) {
+            for (let content in this.oldSitePages[page].content) {
               if (!fieldFound.includes(content)) {
                 fieldFound.push(content)
                 this.errorBag[content] = {
@@ -461,6 +476,10 @@ export default {
             }
           }
           this.$root.$emit('site', this.site)
+
+          this.siteLoading = false
+          this.leftColumnLoading = false
+          this.rightColumnLoading = false
         }
       })
   },
@@ -512,6 +531,53 @@ export default {
     }
   },
   methods: {
+    saveSite () {
+      this.leftColumnLoading = true
+      let siteData = Object.assign({}, this.site)
+      siteData.siteName = siteData.pages[0].name
+      siteData.pages[0] = null
+
+      let frmPage = new FormData()
+      frmPage.append('locale', this.$i18n.locale)
+      frmPage.append('site', JSON.stringify(siteData))
+      frmPage.append('site_uuid', this.globals.uuid)
+
+      this.$axios.post('site/save-site', frmPage, { headers: { 'content-type': 'multipart/form-data' } })
+        .then(res => {
+          if (typeof res.data.msg !== 'undefined') {
+            this.$q.notify({
+              icon: (res.data.status === 'success') ? 'done' : 'error',
+              position: 'bottom-left',
+              message: res.data.msg
+            })
+          }
+          this.siteChangesDetected = false
+        })
+        .catch(err => {
+          let res = err.response.data
+          if (typeof res.errors !== 'undefined') {
+            /* Get first error and select tab where error occurs */
+            let field = Object.keys(res.errors)[0]
+            let el = (typeof this.$refs[field] !== 'undefined') ? this.$refs[field] : null
+            let tab = (el !== null) ? el.$parent.name : null
+            this.pageTab = tab
+
+            for (let field in res.errors) {
+              this.errorBag[field].error = true
+              this.errorBag[field].errorMsg = res.errors[field][0]
+            }
+          }
+        })
+        .finally(() => {
+          this.leftColumnLoading = false
+        })
+    },
+    undoSiteChanges () {
+      this.site.pages[0].children = this.copyObject(this.undoSitePages)
+      this.$nextTick(() => {
+        this.siteChangesDetected = false
+      })
+    },
     addPage (module) {
       console.log(module)
     },
@@ -533,9 +599,9 @@ export default {
             this.globals.currentPage = this.nextPage
             this.currentPage = this.globals.currentPage
             this.nextPage = null
-            setTimeout(() => {
+            this.$nextTick(() => {
               this.pageChangesDetected = false
-            }, 100)
+            })
           } else {
             this.nextPage = null
           }
@@ -585,9 +651,9 @@ export default {
     },
     undoPageChanges () {
       this.site.pages[0].children = this.copyObject(this.undoSitePages)
-      setTimeout(() => {
+      this.$nextTick(() => {
         this.pageChangesDetected = false
-      }, 100)
+      })
     },
     copyObject (o) {
       let output, v, key

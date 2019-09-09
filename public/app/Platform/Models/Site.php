@@ -152,6 +152,7 @@ class Site extends Model implements HasMedia
         if ($index > 0) {
           $content = $page->content;
           $content['imgAboveContent'] = $content['imgAboveContent'] ?? '';
+          $content['imgAboveContentFileName'] = $content['imgAboveContentFileName'] ?? '';
           $content['content'] = $content['content'] ?? '';
 
           $children[] = [

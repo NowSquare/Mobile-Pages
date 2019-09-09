@@ -61,6 +61,45 @@ class SiteController extends Controller {
     }
 
     /**
+     * Save site
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function postSaveSite(Request $request) {
+      $locale = request('locale', config('system.default_language'));
+      $sitePost = request('site', null);
+      if ($sitePost !== null) $sitePost = json_decode($sitePost);
+      $site_uuid = request('site_uuid', null);
+
+      $v = Validator::make((array) $sitePost, [
+        'siteName' => 'required|max:64',
+      ]);
+
+      if ($v->fails()) {
+        return response()->json([
+          'status' => 'error',
+          'errors' => $v->errors()
+        ], 422);
+      }
+
+      $site = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $site_uuid)->first();
+
+      if ($site !== null) {
+
+        // Parse  images
+        // To do
+
+        $site->name = $sitePost->siteName;
+        $site->design = $sitePost->design;
+        $site->save();
+
+        return response()->json(['status' => 'success', 'msg' => trans('app.saved_successfully')], 200);
+      }
+
+      return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
+    }
+
+    /**
      * Save site page
      *
      * @return \Symfony\Component\HttpFoundation\Response
@@ -85,6 +124,34 @@ class SiteController extends Controller {
       $sitePage = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $page->uuid)->first();
 
       if ($sitePage !== null) {
+
+        // Parse content for images
+        foreach ($page->content as $field => $content) {
+          if (Str::startsWith($field, 'img') && ! Str::endsWith($field, 'FileName') && ! Str::startsWith($page->content->{$field}, 'http')) {
+
+            // Remove earlier attached images
+            $sitePage
+              ->clearMediaCollection($field);
+
+            if ($content !== '') {
+              // Attach image
+              $filename = $page->content->{$field . 'FileName'};
+              $sitePage
+                ->addMediaFromBase64($content)
+                ->usingFileName($filename)
+                ->sanitizingFileName(function($fileName) {
+                  return strtolower(str_replace(['#', '/', '\\', ' '], '-', $fileName));
+                })
+                ->toMediaCollection($field, 'media');
+
+              // Replace field with path
+              $page->content->{$field} = request()->getSchemeAndHttpHost() . $sitePage->getFirstMediaUrl($field);
+            } else {
+              $page->content->{$field . 'FileName'} = '';
+            }
+          }
+        }
+
         $sitePage->name = $page->name;
         $sitePage->content = $page->content;
         $sitePage->save();
