@@ -1,6 +1,6 @@
 <template>
   <div v-if="globals.currentPage !== null">
-    <q-layout view="lhh LpR lff" container :style="{'height': (parseInt($q.screen.height) - 58) + 'px', 'background-color': site.design.bgColor, 'color': site.design.textColor}">
+    <q-layout view="lhh LpR lff" container :style="{'height': (parseInt($q.screen.height) - 58) + 'px', 'background-color': site.design.bgColor, 'color': site.design.textColor, 'background-image': 'url(' + site.design.imgSiteBg + ')'}" class="siteBg">
       <q-header reveal :style="{'background-color': site.design.headerBgColor, 'color': site.design.headerTextColor}">
         <q-toolbar>
           <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" />
@@ -56,6 +56,12 @@
 </template>
 
 <style>
+  .siteBg {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+  }
 </style>
 
 <script>

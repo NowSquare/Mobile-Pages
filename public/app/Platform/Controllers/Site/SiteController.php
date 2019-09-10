@@ -85,9 +85,32 @@ class SiteController extends Controller {
       $site = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $site_uuid)->first();
 
       if ($site !== null) {
+        // Parse images
+        foreach ($site as $field => $content) {
+          if (Str::startsWith($field, 'img') && ! Str::endsWith($field, 'FileName') && ! Str::startsWith($site->{$field}, 'http')) {
 
-        // Parse  images
-        // To do
+            // Remove earlier attached images
+            $sitePage
+              ->clearMediaCollection($field);
+
+            if ($content !== '') {
+              // Attach image
+              $filename = $site->{$field . 'FileName'};
+              $sitePage
+                ->addMediaFromBase64($content)
+                ->usingFileName($filename)
+                ->sanitizingFileName(function($fileName) {
+                  return strtolower(str_replace(['#', '/', '\\', ' '], '-', $fileName));
+                })
+                ->toMediaCollection($field, 'media');
+
+              // Replace field with path
+              $site->{$field} = request()->getSchemeAndHttpHost() . $sitePage->getFirstMediaUrl($field);
+            } else {
+              $site->{$field . 'FileName'} = '';
+            }
+          }
+        }
 
         $site->name = $sitePost->siteName;
         $site->design = $sitePost->design;

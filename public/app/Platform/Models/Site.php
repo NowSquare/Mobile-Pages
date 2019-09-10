@@ -191,7 +191,8 @@ class Site extends Model implements HasMedia
       $response = [
         'bgColor' => $this->design['bgColor'] ?? '#eeeeee',
         'textColor' => $this->design['textColor'] ?? '#222222',
-        'bgImg' => $this->design['bgImg'] ?? '',
+        'imgSiteBg' => $this->design['imgSiteBg'] ?? '',
+        'imgSiteBgFileName' => $this->design['imgSiteBgFileName'] ?? '',
         'headerBgColor' => $this->design['headerBgColor'] ?? '#455a64',
         'headerTextColor' => $this->design['headerTextColor'] ?? '#ffffff',
         'titleBarBgColor' => $this->design['titleBarBgColor'] ?? '#607d8b',

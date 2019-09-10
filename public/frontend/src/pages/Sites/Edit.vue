@@ -55,13 +55,13 @@ Site
               >
               <q-tab name="pages" label="Pages" />
               <q-tab name="add_page" label="Add Page" />
+              <q-tab name="site" label="Site" />
               <q-tab name="design" label="Design" />
-              <q-tab name="settings" label="Settings" />
             </q-tabs>
             <q-separator />
             <div class="fit">
               <q-scroll-area class="fit">
-                <q-tab-panels v-model="siteTab" animated keep-alive v-if="!leftColumnLoading">
+                <q-tab-panels v-model="siteTab" animated keep-alive>
                   <q-tab-panel name="pages">
                     <div class="fit q-pa-xs q-gutter-md row">
 <!--
@@ -92,6 +92,22 @@ Site - Tree
                       </q-btn>
                     </div>
                   </q-tab-panel>
+<!--
+---------------------------------------------------------------------------------------------------
+Site - Site tab
+---------------------------------------------------------------------------------------------------
+-->
+                  <q-tab-panel name="site">
+                    <q-input
+                      v-model="site.pages[0].name"
+                      label="Site name"
+                      ref="siteName"
+                      name="siteName"
+                      maxlength="64"
+                      :error="(typeof errorBag.siteName !== 'undefined') ? errorBag.siteName.error : false"
+                      :error-message="(typeof errorBag.siteName !== 'undefined') ? errorBag.siteName.errorMsg : null"
+                    />
+                  </q-tab-panel>
                   <q-tab-panel name="design" keep-alive>
                     <q-list bordered class="rounded-borders">
 <!--
@@ -120,9 +136,15 @@ Site - Design tab - Background
                           />
 
                           <ImageUpload
+                            ref="imgSiteBg"
                             label="Background image"
-                            v-model="site.design.bgImg"
-                            id="imgSiteDesignBackground"
+                            name="imgSiteBg"
+                            v-model="site.design.imgSiteBg"
+                            key="imgSiteBg"
+                            :error="(typeof errorBag.imgSiteBg !== 'undefined') ? errorBag.imgSiteBg.error : false"
+                            :error-message="(typeof errorBag.imgSiteBg !== 'undefined') ? errorBag.imgSiteBg.errorMsg : null"
+                            @filename="(val) => { site.design.imgSiteBgFileName = val }"
+                            :default-value="site.design.imgSiteBgFileName"
                           />
 
                         </div>
@@ -213,17 +235,6 @@ Site - Design tab - Side navigation
                       </q-expansion-item>
                     </q-list>
                   </q-tab-panel>
-                  <q-tab-panel name="settings">
-                    <q-input
-                      v-model="site.pages[0].name"
-                      label="Site name"
-                      ref="siteName"
-                      name="siteName"
-                      maxlength="64"
-                      :error="errorBag.siteName.error"
-                      :error-message="errorBag.siteName.errorMsg"
-                    />
-                  </q-tab-panel>
                 </q-tab-panels>
                 <q-separator />
               </q-scroll-area>
@@ -308,8 +319,8 @@ Site - Content tab
                     label="Name"
                     name="name"
                     maxlength="64"
-                    :error="errorBag.name.error"
-                    :error-message="errorBag.name.errorMsg"
+                    :error="(typeof errorBag.name !== 'undefined') ? errorBag.name.error : false"
+                    :error-message="(typeof errorBag.name !== 'undefined') ? errorBag.name.errorMsg : null"
                   />
 
                   <ImageUpload
@@ -318,8 +329,8 @@ Site - Content tab
                     name="imgAboveContent"
                     v-model="sitePage.content.imgAboveContent"
                     :key="sitePage.uuid"
-                    :error="errorBag.imgAboveContent.error"
-                    :error-message="errorBag.imgAboveContent.errorMsg"
+                    :error="(typeof errorBag.imgAboveContent !== 'undefined') ? errorBag.imgAboveContent.error : false"
+                    :error-message="(typeof errorBag.imgAboveContent !== 'undefined') ? errorBag.imgAboveContent.errorMsg : null"
                     @filename="(val) => { sitePage.content.imgAboveContentFileName = val }"
                     :default-value="sitePage.content.imgAboveContentFileName"
                   />
@@ -329,8 +340,8 @@ Site - Content tab
                     label="Content"
                     name="content"
                     v-model="sitePage.content.content"
-                    :error="errorBag.content.error"
-                    :error-message="errorBag.content.errorMsg"
+                    :error="(typeof errorBag.content !== 'undefined') ? errorBag.content.error : false"
+                    :error-message="(typeof errorBag.content !== 'undefined') ? errorBag.content.errorMsg : null"
                   />
 
                 </q-tab-panel>
@@ -416,6 +427,7 @@ export default {
         ]
       },
       oldSite: null,
+      undoSite: null,
       oldSitePages: null,
       undoSitePages: null,
       errorBag: {},
@@ -432,7 +444,7 @@ export default {
       ]
     }
   },
-  mounted () {
+  created () {
     this.globals.uuid = this.$route.params.uuid || null
     this.oldGlobals = this.copyObject(this.globals)
 
@@ -449,12 +461,13 @@ export default {
         } else {
           this.site = response.data
           this.oldSite = this.copyObject(this.site)
+          this.undoSite = this.copyObject(this.site)
           this.oldSitePages = this.copyObject(this.site.pages[0].children)
           this.undoSitePages = this.copyObject(this.site.pages[0].children)
           this.globals.currentPage = this.site.pages[0].children[0].uuid || null
           this.currentPage = this.site.pages[0].children[0].uuid || null
 
-          /* Fill error bag for form validation, first fields that always exists */
+          /* Fill error bag for form validation */
           this.errorBag.name = {
             error: false,
             errorMsg: null
@@ -464,6 +477,15 @@ export default {
             errorMsg: null
           }
           let fieldFound = []
+          for (let design in this.oldSite.design) {
+            if (!fieldFound.includes(design)) {
+              fieldFound.push(design)
+              this.errorBag[design] = {
+                error: false,
+                errorMsg: null
+              }
+            }
+          }
           for (let page in this.oldSitePages) {
             for (let content in this.oldSitePages[page].content) {
               if (!fieldFound.includes(content)) {
@@ -533,7 +555,7 @@ export default {
   methods: {
     saveSite () {
       this.leftColumnLoading = true
-      let siteData = Object.assign({}, this.site)
+      let siteData = this.copyObject(this.site)
       siteData.siteName = siteData.pages[0].name
       siteData.pages[0] = null
 
@@ -560,7 +582,7 @@ export default {
             let field = Object.keys(res.errors)[0]
             let el = (typeof this.$refs[field] !== 'undefined') ? this.$refs[field] : null
             let tab = (el !== null) ? el.$parent.name : null
-            this.pageTab = tab
+            this.siteTab = tab
 
             for (let field in res.errors) {
               this.errorBag[field].error = true
@@ -573,7 +595,12 @@ export default {
         })
     },
     undoSiteChanges () {
-      this.site.pages[0].children = this.copyObject(this.undoSitePages)
+      this.site.design = this.copyObject(this.undoSite.design)
+      for (let field in this.site.pages[0]) {
+        if (field !== 'children' && field !== 'design') {
+          this.site.pages[0][field] = this.undoSite.pages[0][field]
+        }
+      }
       this.$nextTick(() => {
         this.siteChangesDetected = false
       })
