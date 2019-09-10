@@ -100,7 +100,7 @@ Site - Site tab
                   <q-tab-panel name="site">
                     <q-input
                       v-model="site.pages[0].name"
-                      label="Site name"
+                      label="Name"
                       ref="siteName"
                       name="siteName"
                       maxlength="64"
