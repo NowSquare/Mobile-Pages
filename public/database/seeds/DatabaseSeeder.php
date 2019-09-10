@@ -46,12 +46,12 @@ class DatabaseSeeder extends Seeder
         $user->language = $language;
         $user->locale = $locale;
         $user->timezone = config('general.app_timezone');
-        $user->app_name = config('app.name');
-        $user->app_contact = config('general.mail_contact');
-        $user->app_mail_name_from =  config('general.mail_name_from');
-        $user->app_mail_address_from =  config('general.mail_address_from');
-        $user->app_color = '#304FFE';
-        $user->app_host = str_replace(['http://', 'https://'], '', config('general.app_url'));
+        //$user->app_host = str_replace(['http://', 'https://'], '', config('general.app_url'));
+        //$user->app_name = config('app.name');
+        //$user->app_contact = config('general.mail_contact');
+        //$user->app_mail_name_from =  config('general.mail_name_from');
+        //$user->app_mail_address_from =  config('general.mail_address_from');
+        //$user->app_color = '#304FFE';
         $user->save();
 
         $user = new \App\User;
