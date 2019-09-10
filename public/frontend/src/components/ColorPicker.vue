@@ -1,11 +1,11 @@
 <template>
   <q-input
       :label="label"
-      v-model="inputColor"
+      v-model="selectedColor"
       :rules="['anyColor']"
     >
     <template slot="prepend">
-      <div style="width: 32px; height: 32px; display: inline-block; border: 1px solid #c2c2c2; border-radius: 2px;" :style="{'background-color': inputColor}"></div>
+      <div style="width: 32px; height: 32px; display: inline-block; border: 1px solid #c2c2c2; border-radius: 2px;" :style="{'background-color': selectedColor}"></div>
     </template>
     <template v-slot:append>
       <q-icon name="colorize" class="cursor-pointer">
@@ -20,7 +20,7 @@
 export default {
   name: 'color-picker',
   model: {
-    prop: 'color',
+    prop: 'v-model',
     event: 'input'
   },
   data () {
@@ -34,29 +34,23 @@ export default {
       required: false,
       type: String
     },
+    vModel: {
+      default: null,
+      required: false,
+      type: String
+    },
     color: {
       default: null,
       required: false,
       type: String
     }
   },
-  watch: {
-    inputColor: function (newVal, oldVal) {
-      this.selectedColor = newVal
-    }
-  },
-  mounted () {
-    this.inputColor = this.color
-  },
-  methods: {
-  },
   computed: {
     selectedColor: {
       get () {
-        return this.color
+        return this.vModel
       },
       set (val) {
-        this.inputColor = val
         this.$emit('input', val)
       }
     }
