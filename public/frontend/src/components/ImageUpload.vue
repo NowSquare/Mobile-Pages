@@ -2,10 +2,10 @@
   <div>
     <q-input
       :label="label"
-      v-model="imgName"
+      v-model="filename"
       :ref="name + 'FileName'"
       readonly
-      class="q-mb-lg"
+      class="q-mb-lg ellipsis"
     >
       <template v-slot:append>
         <q-btn round color="white" text-color="grey-9" flat size="sm" icon="mdi-image-plus" @click="uploadFile">
@@ -13,7 +13,7 @@
             Upload image
           </q-tooltip>
         </q-btn>
-        <q-btn round :disabled="imgName === null || imgName === ''" color="white" text-color="grey-9" flat size="sm" icon="delete" @click="removeUpload">
+        <q-btn round :disabled="filename === null || filename === ''" color="white" text-color="grey-9" flat size="sm" icon="delete" @click="removeUpload">
           <q-tooltip>
             Delete image
           </q-tooltip>
@@ -51,7 +51,8 @@ export default {
   },
   data () {
     return {
-      imgName: null,
+      originalFilename: null,
+      filename: null,
       showUploader: false,
       uploadImgSrc: null,
       uploadImgSrcOld: null
@@ -86,11 +87,19 @@ export default {
   },
   created () {
     this.uploadImgSrcOld = this.imgSrc
-    this.imgName = (this.vModel !== null && this.vModel !== '' && !this.vModel.startsWith('data')) ? this.vModel.split('/').reverse()[0] : this.defaultValue
+    this.filename = (this.vModel !== null && this.vModel !== '' && !this.vModel.startsWith('data:')) ? this.vModel.split('/').reverse()[0] : this.defaultValue
+    this.originalFilename = JSON.parse(JSON.stringify(this.filename))
   },
   watch: {
     uploadImgSrc: function (newVal, oldVal) {
       this.imgSrc = newVal
+    },
+    vModel: function (newVal, oldVal) {
+      if (newVal.startsWith('http://') || newVal.startsWith('https://')) {
+        this.filename = this.originalFilename
+      } else if (oldVal === '' && newVal.startsWith('data:')) {
+        this.filename = this.originalFilename
+      }
     }
   },
   methods: {
@@ -103,17 +112,20 @@ export default {
     removeUpload () {
       this.$refs.uploader.reset()
       this.$refs.uploader.removeQueuedFiles()
-      this.imgName = null
+      this.filename = null
       this.imgSrc = (this.defaultToOriginal) ? this.uploadImgSrcOld : ''
     },
     uploadAdded (files) {
       this.imgSrc = files[0].__img.src
-      this.imgName = files[0].name
-      this.$emit('filename', this.imgName)
+      this.filename = files[0].name
+      this.$emit('filename', this.filename)
     },
     uploadRemoved (files) {
       this.imgSrc = this.uploadImgSrcOld
-      this.imgName = null
+      this.filename = null
+    },
+    resetFilename () {
+      this.filename = this.originalFilename
     }
   },
   computed: {
@@ -130,4 +142,9 @@ export default {
 }
 </script>
 <style>
+  .ellipsis input {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 </style>
