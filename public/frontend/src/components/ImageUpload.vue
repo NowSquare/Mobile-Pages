@@ -51,6 +51,7 @@ export default {
   },
   data () {
     return {
+      pauseVModelWatch: false,
       originalFilename: null,
       filename: null,
       showUploader: false,
@@ -95,9 +96,7 @@ export default {
       this.imgSrc = newVal
     },
     vModel: function (newVal, oldVal) {
-      if (newVal.startsWith('http://') || newVal.startsWith('https://')) {
-        this.filename = this.originalFilename
-      } else if (oldVal === '' && newVal.startsWith('data:')) {
+      if (!this.pauseVModelWatch) {
         this.filename = this.originalFilename
       }
     }
@@ -110,22 +109,27 @@ export default {
       })
     },
     removeUpload () {
+      this.pauseVModelWatch = true
       this.$refs.uploader.reset()
       this.$refs.uploader.removeQueuedFiles()
       this.filename = null
       this.imgSrc = (this.defaultToOriginal) ? this.uploadImgSrcOld : ''
+      this.$nextTick(() => {
+        this.pauseVModelWatch = false
+      })
     },
     uploadAdded (files) {
+      this.pauseVModelWatch = true
       this.imgSrc = files[0].__img.src
       this.filename = files[0].name
       this.$emit('filename', this.filename)
+      this.$nextTick(() => {
+        this.pauseVModelWatch = false
+      })
     },
     uploadRemoved (files) {
       this.imgSrc = this.uploadImgSrcOld
       this.filename = null
-    },
-    resetFilename () {
-      this.filename = this.originalFilename
     }
   },
   computed: {
