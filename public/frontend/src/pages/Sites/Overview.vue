@@ -29,6 +29,7 @@
 
         <q-card-section class="col">
           <div class="text-body1">{{ item.name }}</div>
+          <div class="text-body2">{{ item.short_url }}</div>
         </q-card-section>
 
         <q-separator />

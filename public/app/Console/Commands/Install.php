@@ -41,47 +41,60 @@ class Install extends Command
         //if(! defined('STDIN')) define('STDIN', fopen("php://stdin","r"));
 
         // Clear media dir
+        echo PHP_EOL;
+        echo 'Empty media folder...';
         $contents = \Storage::disk('media')->listContents('');
         foreach ($contents as $content) {
           if ($content['type'] == 'dir') {
             \Storage::disk('media')->deleteDir($content['path']);
           }
         }
-        echo 'media cleared - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
 
+        echo 'Running config:cache...';
         \Artisan::call('config:cache');
-        echo 'config:cache - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
       
+        echo 'Running config:clear...';
         \Artisan::call('config:clear');
-        echo 'config:clear - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
 
+        echo 'Running cache:clear...';
         \Artisan::call('cache:clear');
-        echo 'cache:clear - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
 
+        echo 'Running view:clear...';
         \Artisan::call('view:clear');
-        echo 'view:clear - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
 
+        echo 'Generating app key...';
         \Artisan::call('key:generate', ['--force' => true]);
-        echo 'key:generate - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
 
+        echo 'Generating JWT key...';
         \Artisan::call('jwt:secret', ['--force' => true]);
-        echo 'jwt:secret - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
 
+        echo 'Migrating database...';
         \Artisan::call('migrate:refresh', ['--force' => true]);
-        echo 'migrate:refresh - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
 
+        echo 'Running config:cache...';
         \Artisan::call('config:cache');
-        echo 'config:cache - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
       
+        echo 'Running config:clear...';
         \Artisan::call('config:clear');
-        echo 'config:clear - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
 
+        echo 'Clearing cache:clear...';
         \Artisan::call('cache:clear');
-        echo 'cache:clear - done!' . PHP_EOL;
+        echo ' done!' . PHP_EOL;
 
+        echo 'Seeding database...';
         \Artisan::call('db:seed', ['--force' => true]);
-        echo 'db:seed - done!' . PHP_EOL . PHP_EOL;
+        echo ' done!' . PHP_EOL . PHP_EOL;
 
-        echo 'All done!' . PHP_EOL . PHP_EOL;
+        echo 'All done!' . PHP_EOL;
     }
 }

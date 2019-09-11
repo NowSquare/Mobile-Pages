@@ -28,6 +28,7 @@ class CreateSitesTable extends Migration
             $table->string('host', 128)->index()->nullable();
             $table->string('ssl_app_id', 64)->nullable();
             $table->string('name', 128);
+            $table->string('module', 64)->nullable();
             $table->string('language', 5)->nullable();
             $table->json('content')->nullable();
             $table->json('design')->nullable();

@@ -23,8 +23,7 @@ class AppController extends \App\Http\Controllers\Controller {
    */
   public function index() {
     $account = app()->make('account');
-    if (env('APP_DEMO', false) === true) $account->demo = true;
-    $config = (object) $account->only('version', 'config', 'app_name', 'app_headline', 'app_scheme', 'app_host', 'language', 'locale');
+    $config = (! is_object($account)) ? (object) $account->only('version', 'demo', 'config', 'app_name', 'app_scheme', 'app_host', 'language', 'locale', 'timezone', 'currency_code') : $account;
 
     $config = json_encode($config);
 

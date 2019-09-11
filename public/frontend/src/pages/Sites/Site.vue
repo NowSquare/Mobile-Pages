@@ -30,9 +30,9 @@
       </q-drawer>
 
       <q-page-container>
-        <q-page style="padding-top: 66px" class="q-pa-md">
+        <q-page :style="{ 'padding-top': pagePaddingTop + 'px' }" class="q-pa-md">
 
-          <q-page-sticky style="z-index:999" position="top" expand :style="{'background-color': site.design.titleBarBgColor, 'color': site.design.titleBarTextColor}">
+          <q-page-sticky style="z-index:999" position="top" expand :style="{'background-color': site.design.titleBarBgColor, 'color': site.design.titleBarTextColor}" v-if="sitePage.content.settings.showTitleBar">
             <q-toolbar>
               <q-toolbar-title>{{ sitePage.name }}</q-toolbar-title>
             </q-toolbar>
@@ -70,6 +70,7 @@ export default {
   data () {
     return {
       drawerLeft: false,
+      slug: null,
       globals: {
         currentPage: null
       },
@@ -93,6 +94,14 @@ export default {
     }
   },
   beforeCreate () {
+    this.$q.loading.show({
+      delay: 4000 // ms
+    })
+    this.$q.loading.hide()
+
+    this.slug = this.$route.params.slug || null
+    console.log(this.slug)
+
     var that = this
     this.$root.$on('site', function (site) {
       that.site = site
@@ -127,6 +136,9 @@ export default {
       let getPageByUuid = this.$_.find(allPages, ['uuid', this.globals.currentPage])
 
       return getPageByUuid || null
+    },
+    pagePaddingTop () {
+      return (this.sitePage.content.settings.showTitleBar) ? 66 : 15
     }
   }
 }

@@ -32,6 +32,14 @@ class AppServiceProvider extends ServiceProvider
 
         $account = null;
 
+        $account_config = [
+          'pusher' => [
+            'key' => config('broadcasting.connections.pusher.key'),
+            'app_id' => config('broadcasting.connections.pusher.app_id'),
+            'options' => config('broadcasting.connections.pusher.options')
+          ]
+        ];
+
         if (! $this->app->runningInConsole() && \Platform\Controllers\InstallationController::isInstalled() && \Request::segment(1) != 'install' && \Schema::hasTable('users')) {
           $hostname = $this->app['request']->getHost();
 
@@ -68,6 +76,7 @@ class AppServiceProvider extends ServiceProvider
             if ($account->app_host === null) $account->app_host = request()->getHost();
             $account->app_scheme = request()->getScheme();
             $account->version = config('versions.script_version');
+            if (env('APP_DEMO', false) === true) $account->demo = true;
 
             config(['general.cname_domain' => $account->app_host]);
 
@@ -89,15 +98,18 @@ class AppServiceProvider extends ServiceProvider
         if ($account === null) {
             $account = new \stdClass;
             $account->found = false;
-            $account->app_id = null;
-            $account->app_vendor_id = null;
-            $account->id = 1;
-            $account->role = 2;
             $account->app_name = config('app.name');
+            $account->language = config('system.default_language');
+            $account->locale = config('system.default_locale');
+            $account->timezone = config('system.default_timezone');
+            $account->currency_code = config('system.default_currency');
             $account->app_host = request()->getHost();
             $account->app_scheme = request()->getScheme();
             $account->version = config('versions.script_version');
-            $account->config = [];
+            $account->config = $account_config;
+            if (env('APP_DEMO', false) === true) $account->demo = true;
+
+            $account = $account;
 
             $this->app->instance('account', $account);
         }

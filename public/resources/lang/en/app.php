@@ -10,6 +10,11 @@ return [
     "login_incorrect" => "You have entered an invalid username or password.",
     "current_password_incorrect" => "The current password is incorrect.",
     "saved_successfully" => "Changes saved successfully",
+    "item_deleted" => "Item deleted",
+    "page_created" => "Page created",
+    "page_deleted" => "Page deleted",
+    "site_deleted" => "Site deleted",
+    "one_page_required" => "You can't delete this page, a site must have at least one page",
     "processing_error" => "Something went wrong, please contant the system admin",
     "demo_warning" => "The system is in demo mode.",
 

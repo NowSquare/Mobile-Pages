@@ -10,6 +10,8 @@
               </div>
             </div>
 
+            <q-btn color="primary" label="Click here for demo login" v-if="config.demo" size="md" @click="form.email.value='user@example.com';form.password.value='welcome123'" class="q-mt-lg full-width"/>
+
             <q-banner class="bg-red text-white q-mt-lg" v-if="errorMsg">
               <template v-slot:avatar>
                 <q-icon name="warning" color="white" />
@@ -153,6 +155,11 @@ export default {
       if (typeof event.target.name !== 'undefined') {
         this.form[event.target.name].error = false
       }
+    }
+  },
+  computed: {
+    config () {
+      return window.config
     }
   }
 }

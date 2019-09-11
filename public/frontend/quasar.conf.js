@@ -83,7 +83,8 @@ module.exports = function (ctx) {
         'QCheckbox',
         'QBanner',
         'QForm',
-        'QSelect'
+        'QSelect',
+        'QToggle'
       ],
 
       directives: [
@@ -105,7 +106,7 @@ module.exports = function (ctx) {
     supportIE: true,
 
     htmlVariables: {
-      config: ctx.dev ? '{"version":"1.0.0","config":{"pusher":{"key":"","app_id":"","options":{"cluster":"mt1","encrypted":true}}},"app_name":"Mobile Site Builder","app_headline":null,"app_scheme":"http","app_host":"msb.test","language":"en","locale":"en"}' : '{!! $config !!}'
+      config: ctx.dev ? '{"found":false,"app_name":"Mobile Pages","language":"en","locale":"en-US","timezone":"UTC","currency_code":"USD","app_host":"msb.test","app_scheme":"http","version":"1.0.0","config":{"pusher":{"key":"","app_id":"","options":{"cluster":"mt1","encrypted":true}}},"demo":true}' : '{!! $config !!}'
     },
 
     build: {

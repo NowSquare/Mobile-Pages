@@ -123,6 +123,61 @@ class SiteController extends Controller {
     }
 
     /**
+     * Delete site
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function postDeleteSite(Request $request) {
+      $locale = request('locale', config('system.default_language'));
+      $site_uuid = request('site_uuid', null);
+
+      $site = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $site_uuid)->first();
+
+      if ($site !== null) {
+        $site->delete();
+        return response()->json(['status' => 'success', 'msg' => trans('app.site_deleted')], 200);
+      }
+
+      return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
+    }
+
+    /**
+     * Add page
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function postAddPage(Request $request) {
+      $locale = request('locale', config('system.default_language'));
+      $site_uuid = request('site_uuid', null);
+      $module = request('module', null);
+      $name = request('name', null);
+
+      $v = Validator::make(['name' => $name], [
+        'name' => 'required|max:64',
+      ]);
+
+      if ($v->fails()) {
+        return response()->json([
+          'status' => 'error',
+          'errors' => $v->errors()
+        ], 422);
+      }
+
+      $site = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $site_uuid)->first();
+
+      if ($site !== null) {
+        $sitePage = new \Platform\Models\Site;
+        $sitePage->name = $name;
+        $sitePage->module = $module['module'];
+        $site->appendNode($sitePage);
+
+        return response()->json(['status' => 'success', 'msg' => trans('app.page_created'), 'uuid' => $sitePage->uuid], 200);
+      }
+
+      return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
+    }
+
+    /**
      * Save site page
      *
      * @return \Symfony\Component\HttpFoundation\Response
@@ -180,6 +235,31 @@ class SiteController extends Controller {
         $sitePage->save();
 
         return response()->json(['status' => 'success', 'msg' => trans('app.saved_successfully')], 200);
+      }
+
+      return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
+    }
+
+    /**
+     * Delete site page
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function postDeletePage(Request $request) {
+      $locale = request('locale', config('system.default_language'));
+      $page_uuid = request('page_uuid', null);
+
+      $sitePage = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $page_uuid)->first();
+
+      if ($sitePage !== null) {
+        // Check if it is last page (at least one page is required)
+        $siblings = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('parent_id', $sitePage->parent_id)->get();
+        if ($siblings->count() > 1) {
+          $sitePage->delete();
+          return response()->json(['status' => 'success', 'msg' => trans('app.page_deleted')], 200);
+        } else {
+          return response()->json(['status' => 'error', 'msg' => trans('app.one_page_required')], 200);
+        }
       }
 
       return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);

@@ -68,6 +68,11 @@ const routes = [
     }
   },
   {
+    path: '/-/:slug',
+    name: 'site',
+    component: () => import('pages/Sites/Site.vue')
+  },
+  {
     path: '/sites',
     component: () => import('layouts/Master.vue'),
     children: [

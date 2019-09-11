@@ -23,7 +23,7 @@ class DemoContentSeeder extends Seeder
       $account_id = 1;
       $created_by = 2;
 
-      $site_count = 6;
+      $site_count = 12;
       $site_min_pages_count = 4;
       $site_max_pages_count = 8;
 
@@ -43,7 +43,6 @@ class DemoContentSeeder extends Seeder
         $site->design = [
           'bgColor' => $background_colors[mt_rand(0, count($background_colors) - 1)],
           'textColor' => $primary_text_colors[mt_rand(0, count($primary_text_colors) - 1)],
-          'bgImg' => '',
           'headerBgColor' => $secondary_colors[mt_rand(0, count($secondary_colors) - 1)],
           'headerTextColor' => $secondary_text_colors[mt_rand(0, count($secondary_text_colors) - 1)],
           'titleBarBgColor' => $title_colors[mt_rand(0, count($title_colors) - 1)],
@@ -60,7 +59,7 @@ class DemoContentSeeder extends Seeder
           $sitePage = new Platform\Models\Site;
 
           $sitePage->account_id = $account_id;
-          $sitePage->name = str_replace('.', '', $faker->sentence($nbWords = 3, $variableNbWords = true));
+          $sitePage->name = str_replace('.', '', $faker->sentence($nbWords = 2, $variableNbWords = true));
           $sitePage->content = [
             'content' => '<div><font size="3">' . implode('</font></div><font size="3"><br></font><div><font size="3">', $faker->paragraphs($nb = 3, $asText = false)) . '</font></div>'
           ];

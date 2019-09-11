@@ -64,13 +64,13 @@
     >
       <q-scroll-area class="fit">
 
-        <q-toolbar>
+        <q-toolbar style="height: 57px">
           <q-toolbar-title class="row items-center text-grey-7">
             <span class="q-ml-sm">{{ window.config.app_name }}</span>
           </q-toolbar-title>
         </q-toolbar>
 
-        <q-list padding>
+        <q-list>
           <q-item v-for="link in links1" :key="link.text" clickable exact :to="{ name: link.to }" active-class="bg-grey-9">
             <q-item-section avatar>
               <q-icon :name="link.icon" />
@@ -110,19 +110,23 @@
       <router-view />
     </q-page-container>
     <confirm ref="confirm"></confirm>
+    <prompt ref="prompt"></prompt>
   </q-layout>
 </template>
 
 <script>
 import Confirm from 'components/Confirm'
+import Prompt from 'components/Prompt'
 
 export default {
   name: 'MasterLayout',
   components: {
-    Confirm
+    Confirm,
+    Prompt
   },
   mounted () {
     this.$root.$confirm = this.$refs.confirm.open
+    this.$root.$prompt = this.$refs.prompt.open
   },
   created () {
     this.leftDrawerOpen = !this.$q.screen.lt.md

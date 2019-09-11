@@ -12,7 +12,7 @@ return [
 
     // Localization defaults
     'default_language' => 'en',
-    'default_locale' => 'en_US',
+    'default_locale' => 'en-US',
     'default_timezone' => 'UTC',
     'default_currency' => 'USD',
 ];

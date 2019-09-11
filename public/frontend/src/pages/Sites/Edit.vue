@@ -37,7 +37,7 @@ Site
                       <q-item-section>Show QR code</q-item-section>
                     </q-item>
                     <q-separator />
-                    <q-item clickable class="text-red">
+                    <q-item clickable class="text-red" @click="deleteSite">
                       <q-item-section>Delete site</q-item-section>
                     </q-item>
                   </q-list>
@@ -81,11 +81,16 @@ Site - Tree
                       />
                     </div>
                   </q-tab-panel>
+<!--
+---------------------------------------------------------------------------------------------------
+Site - Add page
+---------------------------------------------------------------------------------------------------
+-->
                   <q-tab-panel name="add_page">
                     <div class="fit q-pa-xs q-gutter-lg row">
-                      <q-btn class="site-page" round flat :color="item.color" stack no-caps size="32px" v-for="(item, index) in pageModules" :key="index">
+                      <q-btn class="site-page" round flat :color="item.color" stack no-caps size="32px" v-for="(item, index) in pageModules" :key="index" @click="addPage(item)">
                         <q-icon size="28px" class="q-mb-xs" :name="item.icon" />
-                        <div class="title" style="line-height: 18px">{{ item.text }}</div>
+                        <div class="title" style="line-height: 18px">{{ item.label }}</div>
                         <q-tooltip>
                         {{ item.description }}
                         </q-tooltip>
@@ -299,7 +304,7 @@ Page
             align="justify"
             narrow-indicator
           >
-            <q-tab name="content" label="Content" />
+            <q-tab name="page" label="Page" />
             <q-tab name="settings" label="Settings" />
           </q-tabs>
           <q-separator />
@@ -308,10 +313,10 @@ Page
               <q-tab-panels v-model="pageTab" animated keep-alive>
 <!--
 ---------------------------------------------------------------------------------------------------
-Site - Content tab
+Site - Page tab
 ---------------------------------------------------------------------------------------------------
 -->
-                <q-tab-panel name="content">
+                <q-tab-panel name="page">
 
                   <q-input
                     ref="name"
@@ -351,22 +356,15 @@ Site - Settings
 ---------------------------------------------------------------------------------------------------
 -->
                 <q-tab-panel name="settings">
-                  <q-list bordered class="rounded-borders">
-                    <q-expansion-item
-                      v-model="expandedPageSettingsGeneral"
-                      dense-toggle
-                      label="General"
-                      class="text-subtitle1"
-                      header-class="bg-grey-1"
-                    >
-                      <q-separator />
-                      <div class="q-pa-lg">
 
-                        Settings
+                  <q-toggle
+                    ref="showTitleBar"
+                    label="Show title toolbar"
+                    name="showTitleBar"
+                    color="green"
+                    v-model="sitePage.content.settings.showTitleBar"
+                  />
 
-                      </div>
-                      </q-expansion-item>
-                    </q-list>
                   <q-separator />
                 </q-tab-panel>
               </q-tab-panels>
@@ -401,7 +399,7 @@ export default {
       leftColumnLoading: true,
       rightColumnLoading: true,
       siteTab: 'pages',
-      pageTab: 'content',
+      pageTab: 'page',
       expandedSiteDesignBackground: false,
       expandedSiteDesignHeader: false,
       expandedSiteDesignTitleToolbar: false,
@@ -435,7 +433,7 @@ export default {
         {
           icon: 'notes',
           color: 'grey-9',
-          text: 'Content',
+          label: 'Content',
           description: 'Basic content page.',
           module: 'Content',
           canBeHomePage: true,
@@ -447,63 +445,7 @@ export default {
   created () {
     this.globals.uuid = this.$route.params.uuid || null
     this.oldGlobals = this.copyObject(this.globals)
-
-    this.$axios
-      .get('site', {
-        params: {
-          uuid: this.globals.uuid
-        }
-      })
-      .then(response => {
-        if (response.data.length === 0) {
-          /* Site not found, redirect back */
-          this.$router.push({ name: 'sites.overview' })
-        } else {
-          this.site = response.data
-          this.oldSite = this.copyObject(this.site)
-          this.undoSite = this.copyObject(this.site)
-          this.oldSitePages = this.copyObject(this.site.pages[0].children)
-          this.undoSitePages = this.copyObject(this.site.pages[0].children)
-          this.globals.currentPage = this.site.pages[0].children[0].uuid || null
-          this.currentPage = this.site.pages[0].children[0].uuid || null
-
-          /* Fill error bag for form validation */
-          this.errorBag.name = {
-            error: false,
-            errorMsg: null
-          }
-          this.errorBag.siteName = {
-            error: false,
-            errorMsg: null
-          }
-          let fieldFound = []
-          for (let design in this.oldSite.design) {
-            if (!fieldFound.includes(design)) {
-              fieldFound.push(design)
-              this.errorBag[design] = {
-                error: false,
-                errorMsg: null
-              }
-            }
-          }
-          for (let page in this.oldSitePages) {
-            for (let content in this.oldSitePages[page].content) {
-              if (!fieldFound.includes(content)) {
-                fieldFound.push(content)
-                this.errorBag[content] = {
-                  error: false,
-                  errorMsg: null
-                }
-              }
-            }
-          }
-          this.$root.$emit('site', this.site)
-
-          this.siteLoading = false
-          this.leftColumnLoading = false
-          this.rightColumnLoading = false
-        }
-      })
+    this.loadSite()
   },
   beforeRouteLeave (to, from, next) {
     if (this.siteChangesDetected || this.pageChangesDetected) {
@@ -553,6 +495,64 @@ export default {
     }
   },
   methods: {
+    loadSite (selectedPageUuid = null) {
+      this.$axios
+        .get('site', {
+          params: {
+            uuid: this.globals.uuid
+          }
+        })
+        .then(response => {
+          if (response.data.length === 0) {
+            /* Site not found, redirect back */
+            this.$router.push({ name: 'sites.overview' })
+          } else {
+            this.site = response.data
+            this.oldSite = this.copyObject(this.site)
+            this.undoSite = this.copyObject(this.site)
+            this.oldSitePages = this.copyObject(this.site.pages[0].children)
+            this.undoSitePages = this.copyObject(this.site.pages[0].children)
+            this.globals.currentPage = (selectedPageUuid !== null) ? selectedPageUuid : this.site.pages[0].children[0].uuid || null
+            this.currentPage = (selectedPageUuid !== null) ? selectedPageUuid : this.site.pages[0].children[0].uuid || null
+
+            /* Fill error bag for form validation */
+            this.errorBag.name = {
+              error: false,
+              errorMsg: null
+            }
+            this.errorBag.siteName = {
+              error: false,
+              errorMsg: null
+            }
+            let fieldFound = []
+            for (let design in this.oldSite.design) {
+              if (!fieldFound.includes(design)) {
+                fieldFound.push(design)
+                this.errorBag[design] = {
+                  error: false,
+                  errorMsg: null
+                }
+              }
+            }
+            for (let page in this.oldSitePages) {
+              for (let content in this.oldSitePages[page].content) {
+                if (!fieldFound.includes(content)) {
+                  fieldFound.push(content)
+                  this.errorBag[content] = {
+                    error: false,
+                    errorMsg: null
+                  }
+                }
+              }
+            }
+            this.$root.$emit('site', this.site)
+
+            this.siteLoading = false
+            this.leftColumnLoading = false
+            this.rightColumnLoading = false
+          }
+        })
+    },
     saveSite () {
       this.leftColumnLoading = true
       let siteData = this.copyObject(this.site)
@@ -594,6 +594,37 @@ export default {
           this.leftColumnLoading = false
         })
     },
+    deleteSite () {
+      this.$root.$confirm('Do you want to delete this site? This cannot be undone.', { icon: 'delete', agreeLabel: 'Delete' }).then((confirm) => {
+        if (confirm) {
+          this.leftColumnLoading = true
+          this.$axios.post('site/delete-site', {
+            locale: this.$i18n.locale,
+            site_uuid: this.globals.uuid
+          })
+            .then(res => {
+              if (typeof res.data.msg !== 'undefined') {
+                this.$q.notify({
+                  icon: (res.data.status === 'success') ? 'done' : 'error',
+                  position: 'bottom-left',
+                  message: res.data.msg
+                })
+              }
+              if (res.data.status === 'success') {
+                this.$router.push({ name: 'sites.overview' })
+              }
+              this.pageChangesDetected = false
+            })
+            .catch(err => {
+              let res = err.response.data
+              console.log(res)
+            })
+            .finally(() => {
+              this.leftColumnLoading = false
+            })
+        }
+      })
+    },
     undoSiteChanges () {
       this.site.design = this.copyObject(this.undoSite.design)
       for (let field in this.site.pages[0]) {
@@ -605,15 +636,81 @@ export default {
         this.siteChangesDetected = false
       })
     },
-    addPage (module) {
-      console.log(module)
-    },
-    deletePage () {
-      this.$root.$confirm('Do you want to delete this page?', { icon: 'delete' }).then((confirm) => {
-        if (confirm) {
-          console.log('delete')
+    addPage (item) {
+      this.$root.$prompt('Enter a name', { icon: item.icon }).then((confirm) => {
+        if (confirm.submit && confirm.input !== null && confirm.input !== '') {
+          this.leftColumnLoading = true
+          this.$axios.post('site/add-page', {
+            locale: this.$i18n.locale,
+            site_uuid: this.globals.uuid,
+            module: item,
+            name: confirm.input
+          })
+            .then(res => {
+              if (typeof res.data.msg !== 'undefined') {
+                this.$q.notify({
+                  icon: (res.data.status === 'success') ? 'done' : 'error',
+                  position: 'bottom-left',
+                  message: res.data.msg
+                })
+              }
+              if (res.data.status === 'success') {
+                this.siteTab = 'pages'
+                this.loadSite(res.data.uuid)
+              }
+              this.pageChangesDetected = false
+            })
+            .catch(err => {
+              let res = err.response.data
+              this.$q.notify({
+                icon: 'error',
+                position: 'bottom-left',
+                message: res.errors.name[0]
+              })
+            })
+            .finally(() => {
+              this.leftColumnLoading = false
+            })
         }
       })
+    },
+    deletePage () {
+      if (parseInt(this.site.pages[0].children.length) === 1) {
+        this.$root.$confirm('You can\'t delete this page, a site must have at least one page.', { icon: 'warning', showCancel: false, agreeColor: 'grey-9', agreeLabel: 'OK' }).then((confirm) => {
+          if (confirm) {
+          }
+        })
+      } else {
+        this.$root.$confirm('Do you want to delete this page? This cannot be undone.', { icon: 'delete', agreeLabel: 'Delete' }).then((confirm) => {
+          if (confirm) {
+            this.rightColumnLoading = true
+            this.$axios.post('site/delete-page', {
+              locale: this.$i18n.locale,
+              page_uuid: this.sitePage.uuid
+            })
+              .then(res => {
+                if (typeof res.data.msg !== 'undefined') {
+                  this.$q.notify({
+                    icon: (res.data.status === 'success') ? 'done' : 'error',
+                    position: 'bottom-left',
+                    message: res.data.msg
+                  })
+                }
+                if (res.data.status === 'success') {
+                  this.loadSite()
+                }
+                this.pageChangesDetected = false
+              })
+              .catch(err => {
+                let res = err.response.data
+                console.log(res)
+              })
+              .finally(() => {
+                this.rightColumnLoading = false
+              })
+          }
+        })
+      }
     },
     checkForPageChanges () {
       if (this.nextPage === null) this.nextPage = this.globals.currentPage

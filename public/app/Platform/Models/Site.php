@@ -155,6 +155,11 @@ class Site extends Model implements HasMedia
           $content['imgAboveContentFileName'] = $content['imgAboveContentFileName'] ?? '';
           $content['content'] = $content['content'] ?? '';
 
+          $settings = $page->settings;
+          $settings['showTitleBar'] = $content['settings']['showTitleBar'] ?? true;
+
+          $content['settings'] = $settings;
+
           $children[] = [
             'uuid' => $page->uuid,
             'name' => $page->name,
