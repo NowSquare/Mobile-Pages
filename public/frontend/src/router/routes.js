@@ -87,6 +87,20 @@ const routes = [
     }
   },
   {
+    path: '/site/new',
+    component: () => import('layouts/Master.vue'),
+    children: [
+      {
+        path: '',
+        name: 'site.new',
+        component: () => import('pages/Sites/New.vue')
+      }
+    ],
+    meta: {
+      auth: { roles: [2], redirect: { name: 'login' }, forbiddenRedirect: '/' }
+    }
+  },
+  {
     path: '/site/edit/:uuid',
     component: () => import('layouts/Master.vue'),
     children: [

@@ -80,7 +80,7 @@
             </q-item-section>
           </q-item>
 
-          <q-separator class="q-my-md" />
+          <q-separator class="q-my-md" style="background:#313131" />
 
           <q-item clickable :to="{ name: 'user.profile' }" active-class="bg-grey-9">
             <q-item-section avatar>
@@ -91,7 +91,7 @@
             </q-item-section>
           </q-item>
 
-          <q-separator class="q-my-md" />
+          <q-separator class="q-my-md" style="background:#313131" />
 
           <q-item clickable @click="$auth.logout()" active-class="bg-grey-9">
             <q-item-section avatar>

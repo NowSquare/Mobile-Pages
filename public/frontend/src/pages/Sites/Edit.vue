@@ -30,11 +30,8 @@ Site
                   transition-hide="jump-up"
                 >
                   <q-list style="min-width: 120px">
-                    <q-item clickable>
+                    <q-item clickable @click="openURL(site.short_url)">
                       <q-item-section>Open site in new window</q-item-section>
-                    </q-item>
-                    <q-item clickable>
-                      <q-item-section>Show QR code</q-item-section>
                     </q-item>
                     <q-separator />
                     <q-item clickable class="text-red" @click="deleteSite">
@@ -378,6 +375,7 @@ Site - Settings
   </q-page>
 </template>
 <script>
+import { openURL } from 'quasar'
 import ColorPicker from 'components/ColorPicker'
 import ImageUpload from 'components/ImageUpload'
 import Editor from 'components/Editor'
@@ -414,6 +412,7 @@ export default {
       currentPage: null,
       nextPage: null,
       site: {
+        short_url: null,
         design: {
         },
         pages: [
@@ -637,7 +636,7 @@ export default {
       })
     },
     addPage (item) {
-      this.$root.$prompt('Enter a name', { icon: item.icon }).then((confirm) => {
+      this.$root.$prompt('Enter name for new page', { icon: item.icon }).then((confirm) => {
         if (confirm.submit && confirm.input !== null && confirm.input !== '') {
           this.leftColumnLoading = true
           this.$axios.post('site/add-page', {
@@ -796,6 +795,9 @@ export default {
         }
       }
       return allPages
+    },
+    openURL (url) {
+      openURL(url)
     }
   },
   computed: {

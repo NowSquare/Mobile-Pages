@@ -93,22 +93,24 @@ export default {
       }
     }
   },
-  beforeCreate () {
-    this.$q.loading.show({
-      delay: 4000 // ms
-    })
-    this.$q.loading.hide()
-
+  created () {
     this.slug = this.$route.params.slug || null
-    console.log(this.slug)
 
-    var that = this
-    this.$root.$on('site', function (site) {
-      that.site = site
-    })
-    this.$root.$on('globals', function (globals) {
-      that.globals = globals
-    })
+    if (this.slug !== null) {
+      this.$q.loading.show({
+        delay: 40 // ms
+      })
+      this.loadSite()
+    } else {
+      var that = this
+      this.$root.$on('site', function (site) {
+        that.site = site
+        this.$q.loading.hide()
+      })
+      this.$root.$on('globals', function (globals) {
+        that.globals = globals
+      })
+    }
   },
   methods: {
     getAllPages (pages, allPages) {
@@ -128,6 +130,21 @@ export default {
         }
       }
       return allPages
+    },
+    loadSite () {
+      this.$axios
+        .get('site-by-slug', {
+          params: {
+            slug: this.slug
+          }
+        })
+        .then(response => {
+          if (response.data.length === 0) {
+            /* Site not found */
+          } else {
+            this.$q.loading.hide()
+          }
+        })
     }
   },
   computed: {

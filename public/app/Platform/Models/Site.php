@@ -171,6 +171,7 @@ class Site extends Model implements HasMedia
       }
 
       $response = [
+        'short_url' => $this->short_url,
         'design' => $sitePages[0]->getDesign(),
         'pages' => [
           [

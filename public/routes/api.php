@@ -27,6 +27,7 @@ Route::group(['prefix' => 'localization'], function() {
 Route::group(['middleware' => 'auth:api'], function() {
   Route::get('sites', '\Platform\Controllers\Site\SiteController@getSites');
   Route::get('site', '\Platform\Controllers\Site\SiteController@getSite');
+  Route::post('site/create-site', '\Platform\Controllers\Site\SiteController@postCreateSite');
   Route::post('site/save-site', '\Platform\Controllers\Site\SiteController@postSaveSite');
   Route::post('site/delete-site', '\Platform\Controllers\Site\SiteController@postDeleteSite');
   Route::post('site/add-page', '\Platform\Controllers\Site\SiteController@postAddPage');

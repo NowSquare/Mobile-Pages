@@ -67,7 +67,7 @@
                   name="name"
                   v-model="form.name.value"
                   :error="form.name.error"
-                  :error-message="form.email.errorMsg"
+                  :error-message="form.name.errorMsg"
                   :label="$t('name')"
                   @keyup="resetValidation($event)"
                 >

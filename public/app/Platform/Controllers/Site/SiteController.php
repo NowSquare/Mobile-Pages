@@ -61,6 +61,43 @@ class SiteController extends Controller {
     }
 
     /**
+     * Create page
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function postCreateSite(Request $request) {
+      $locale = request('locale', config('system.default_language'));
+      $module = request('module', null);
+      $name = request('name', null);
+
+      $v = Validator::make(['name' => $name], [
+        'name' => 'required|max:64',
+      ]);
+
+      if ($v->fails()) {
+        return response()->json([
+          'status' => 'error',
+          'errors' => $v->errors()
+        ], 422);
+      }
+
+      $site = new \Platform\Models\Site;
+      $site->name = $name;
+      $site->save();
+      
+      if ($site !== null) {
+        $sitePage = new \Platform\Models\Site;
+        $sitePage->name = 'Home';
+        $sitePage->module = $module;
+        $site->appendNode($sitePage);
+
+        return response()->json(['status' => 'success', 'msg' => trans('app.site_created'), 'uuid' => $site->uuid], 200);
+      }
+
+      return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
+    }
+
+    /**
      * Save site
      *
      * @return \Symfony\Component\HttpFoundation\Response

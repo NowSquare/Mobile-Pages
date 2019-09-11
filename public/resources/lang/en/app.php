@@ -13,6 +13,7 @@ return [
     "item_deleted" => "Item deleted",
     "page_created" => "Page created",
     "page_deleted" => "Page deleted",
+    "site_created" => "Site created",
     "site_deleted" => "Site deleted",
     "one_page_required" => "You can't delete this page, a site must have at least one page",
     "processing_error" => "Something went wrong, please contant the system admin",
