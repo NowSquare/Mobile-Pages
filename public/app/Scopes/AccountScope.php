@@ -20,8 +20,8 @@ class AccountScope implements Scope {
           if (isset($this->user) && auth()->check()) {
             $builder->where($model->getTable() . '.account_id', '=', $this->user->account_id);
           } else {
-            $account = app()->make('account');
-            $builder->where($model->getTable() . '.account_id', '=', $account->id);
+            //$account = app()->make('account');
+            //$builder->where($model->getTable() . '.account_id', '=', $account->id);
           }
         }
     }

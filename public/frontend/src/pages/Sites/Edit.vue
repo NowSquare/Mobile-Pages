@@ -30,8 +30,11 @@ Site
                   transition-hide="jump-up"
                 >
                   <q-list style="min-width: 120px">
-                    <q-item clickable @click="openURL(site.short_url)">
-                      <q-item-section>Open site in new window</q-item-section>
+                    <q-item clickable @click="openURL(site.host + '/#/' + site.path)">
+                      <q-item-section>View site</q-item-section>
+                      <q-item-section avatar>
+                        <q-icon name="open_in_new" />
+                      </q-item-section>
                     </q-item>
                     <q-separator />
                     <q-item clickable class="text-red" @click="deleteSite">

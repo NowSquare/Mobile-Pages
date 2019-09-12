@@ -144,12 +144,13 @@ class Site extends Model implements HasMedia
      *
      * @return array
      */
-    public function getSite() {
+    public function getSite($pageSlug = null) {
       $sitePages = \Platform\Models\Site::whereDescendantOrSelf($this)->get();
 
       $children = [];
       foreach ($sitePages as $index => $page) {
         if ($index > 0) {
+          if ($pageSlug == $page->slug) $pageUuid = $page->uuid;
           $content = $page->content;
           $content['imgAboveContent'] = $content['imgAboveContent'] ?? '';
           $content['imgAboveContentFileName'] = $content['imgAboveContentFileName'] ?? '';
@@ -163,6 +164,7 @@ class Site extends Model implements HasMedia
           $children[] = [
             'uuid' => $page->uuid,
             'name' => $page->name,
+            'path' => $page->slug,
             'content' => $content,
             'module' => 'Content',
             'icon' => 'notes'
@@ -170,8 +172,13 @@ class Site extends Model implements HasMedia
         }
       }
 
+      if ($pageSlug === null) $pageUuid = $children[0]['uuid'];
+
       $response = [
-        'short_url' => $this->short_url,
+        'status' => 200,
+        'host' => request()->getSchemeAndHttpHost(),
+        'path' => '-/' . $this->short_slug,
+        'pageUuid' => $pageUuid,
         'design' => $sitePages[0]->getDesign(),
         'pages' => [
           [

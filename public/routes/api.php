@@ -17,6 +17,8 @@ use Illuminate\Http\Request;
 Route::get('test', '\Platform\Controllers\Site\SiteController@getTest');
 
 // Public routes
+Route::get('site-by-slug', '\Platform\Controllers\Site\SiteController@getSiteBySlug');
+
 Route::group(['prefix' => 'localization'], function() {
   Route::get('locales', '\Platform\Controllers\Core\Localization@getLocales');
   Route::get('timezones', '\Platform\Controllers\Core\Localization@getTimezones');

@@ -61,6 +61,25 @@ class SiteController extends Controller {
     }
 
     /**
+     * Get site by slug
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getSiteBySlug(Request $request) {
+      $siteSlug = request('siteSlug', null);
+      $pageSlug = request('pageSlug', null);
+
+      $site = \Platform\Models\Site::where('short_slug', $siteSlug)->first();
+
+      if ($site !== null) {
+        $site = $site->getSite($pageSlug);
+        return response()->json($site, 200);
+      } else {
+        return response()->json(['status' => 404], 200);
+      }
+    }
+
+    /**
      * Create page
      *
      * @return \Symfony\Component\HttpFoundation\Response

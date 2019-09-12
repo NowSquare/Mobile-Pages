@@ -1,57 +1,67 @@
 <template>
-  <div v-if="globals.currentPage !== null">
-    <q-layout view="lhh LpR lff" container :style="{'height': (parseInt($q.screen.height) - 58) + 'px', 'background-color': site.design.bgColor, 'color': site.design.textColor, 'background-image': 'url(' + site.design.imgSiteBg + ')'}" class="siteBg">
-      <q-header reveal :style="{'background-color': site.design.headerBgColor, 'color': site.design.headerTextColor}">
-        <q-toolbar>
-          <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" />
-          <q-toolbar-title>{{ site.pages[0].name }}</q-toolbar-title>
-        </q-toolbar>
-      </q-header>
+  <div>
+    <div v-if="status === 404">
+      <div class="row items-center" :style="{'height': parseInt($q.screen.height) + 'px' }">
+        <div class="col text-center text-h4">
+          Site not found
+        </div>
+      </div>
+    </div>
+    <div v-if="globals.currentPage !== null">
+      <q-layout view="lhh LpR lff" container :style="{'height': pageHeight + 'px', 'background-color': site.design.bgColor, 'color': site.design.textColor, 'background-image': 'url(' + site.design.imgSiteBg + ')'}" class="siteBg">
+        <q-header reveal :style="{'background-color': site.design.headerBgColor, 'color': site.design.headerTextColor}">
+          <q-toolbar>
+            <q-btn flat @click="drawerLeft = !drawerLeft" round dense icon="menu" v-if="site.pages[0].children.length > 1" />
+            <q-toolbar-title>{{ site.pages[0].name }}</q-toolbar-title>
+          </q-toolbar>
+        </q-header>
 
-      <q-drawer
-        v-model="drawerLeft"
-        :width="260"
-        :breakpoint="700"
-        content-class="shadow-1"
-        :content-style="{'background-color': site.design.drawerBgColor}"
-      >
+        <q-drawer
+          v-if="site.pages[0].children.length > 1"
+          v-model="drawerLeft"
+          :width="260"
+          :breakpoint="700"
+          content-class="shadow-1"
+          :content-style="{'background-color': site.design.drawerBgColor}"
+        >
 
-        <q-scroll-area class="fit">
-          <div class="q-pa-sm">
+          <q-scroll-area class="fit">
+            <div class="q-pa-sm">
 
-            <q-item v-for="page in getPages()" :key="page.id" clickable :style="{'color': site.design.drawerTextColor}">
-              <q-item-section>
-                <q-item-label>{{ page.name }}</q-item-label>
-              </q-item-section>
-            </q-item>
+              <q-item v-for="page in getPages()" :key="page.id" clickable :style="{'color': site.design.drawerTextColor}" :to="editor ? null : '/' + site.path + '/' + page.path">
+                <q-item-section>
+                  <q-item-label>{{ page.name }}</q-item-label>
+                </q-item-section>
+              </q-item>
 
-          </div>
-        </q-scroll-area>
-      </q-drawer>
+            </div>
+          </q-scroll-area>
+        </q-drawer>
 
-      <q-page-container>
-        <q-page :style="{ 'padding-top': pagePaddingTop + 'px' }" class="q-pa-md">
+        <q-page-container>
+          <q-page :style="{ 'padding-top': pagePaddingTop + 'px' }" class="q-pa-md">
 
-          <q-page-sticky style="z-index:999" position="top" expand :style="{'background-color': site.design.titleBarBgColor, 'color': site.design.titleBarTextColor}" v-if="sitePage.content.settings.showTitleBar">
-            <q-toolbar>
-              <q-toolbar-title>{{ sitePage.name }}</q-toolbar-title>
-            </q-toolbar>
-          </q-page-sticky>
+            <q-page-sticky style="z-index:999" position="top" expand :style="{'background-color': site.design.titleBarBgColor, 'color': site.design.titleBarTextColor}" v-if="sitePage.content.settings.showTitleBar">
+              <q-toolbar>
+                <q-toolbar-title>{{ sitePage.name }}</q-toolbar-title>
+              </q-toolbar>
+            </q-page-sticky>
 
-          <q-img
-            v-if="sitePage.content.imgAboveContent"
-            class="q-mb-md rounded-borders shadow-1"
-            :src="sitePage.content.imgAboveContent"
-            transition="fade"
-            spinner-color="white"
-          />
+            <q-img
+              v-if="sitePage.content.imgAboveContent"
+              class="q-mb-md rounded-borders shadow-1"
+              :src="sitePage.content.imgAboveContent"
+              transition="fade"
+              spinner-color="white"
+            />
 
-          <div v-html="sitePage.content.content"/>
+            <div v-html="sitePage.content.content"/>
 
-        </q-page>
+          </q-page>
 
-      </q-page-container>
-    </q-layout>
+        </q-page-container>
+      </q-layout>
+      </div>
     </div>
 </template>
 
@@ -69,8 +79,11 @@ export default {
   name: 'MobileSite',
   data () {
     return {
+      editor: false,
+      status: null,
       drawerLeft: false,
-      slug: null,
+      siteSlug: null,
+      pageSlug: null,
       globals: {
         currentPage: null
       },
@@ -94,14 +107,16 @@ export default {
     }
   },
   created () {
-    this.slug = this.$route.params.slug || null
-
-    if (this.slug !== null) {
+    this.siteSlug = this.$route.params.siteSlug || null
+    this.pageSlug = this.$route.params.pageSlug || null
+    console.log(this.pageSlug)
+    if (this.siteSlug !== null) {
       this.$q.loading.show({
-        delay: 40 // ms
+        delay: 40
       })
       this.loadSite()
     } else {
+      this.editor = true
       var that = this
       this.$root.$on('site', function (site) {
         that.site = site
@@ -135,16 +150,30 @@ export default {
       this.$axios
         .get('site-by-slug', {
           params: {
-            slug: this.slug
+            siteSlug: this.siteSlug,
+            pageSlug: this.pageSlug
           }
         })
         .then(response => {
-          if (response.data.length === 0) {
-            /* Site not found */
-          } else {
-            this.$q.loading.hide()
+          this.$q.loading.hide()
+          this.status = response.data.status
+          if (response.data.status === 200) {
+            this.site = response.data
+            document.title = response.data.pages[0].name
+            this.globals.currentPage = response.data.pageUuid
           }
         })
+    }
+  },
+  watch: {
+    '$route.params.pageSlug': function (pageSlug) {
+      let pages = this.getPages()
+      for (let page in pages) {
+        if (pageSlug === pages[page].path) {
+          this.globals.currentPage = pages[page].uuid
+          return
+        }
+      }
     }
   },
   computed: {
@@ -156,6 +185,9 @@ export default {
     },
     pagePaddingTop () {
       return (this.sitePage.content.settings.showTitleBar) ? 66 : 15
+    },
+    pageHeight () {
+      return (this.editor) ? (parseInt(this.$q.screen.height) - 58) : parseInt(this.$q.screen.height)
     }
   }
 }

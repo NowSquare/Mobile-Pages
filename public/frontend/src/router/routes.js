@@ -68,8 +68,13 @@ const routes = [
     }
   },
   {
-    path: '/-/:slug',
-    name: 'site',
+    path: '/-/:siteSlug',
+    name: 'site.home',
+    component: () => import('pages/Sites/Site.vue')
+  },
+  {
+    path: '/-/:siteSlug/:pageSlug',
+    name: 'site.page',
     component: () => import('pages/Sites/Site.vue')
   },
   {
@@ -107,20 +112,6 @@ const routes = [
       {
         path: '',
         name: 'site.edit',
-        component: () => import('pages/Sites/Edit.vue')
-      }
-    ],
-    meta: {
-      auth: { roles: [2], redirect: { name: 'login' }, forbiddenRedirect: '/' }
-    }
-  },
-  {
-    path: '/site/new',
-    component: () => import('layouts/Master.vue'),
-    children: [
-      {
-        path: '',
-        name: 'site.new',
         component: () => import('pages/Sites/Edit.vue')
       }
     ],

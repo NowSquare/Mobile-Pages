@@ -29,7 +29,10 @@
             <q-menu>
               <q-list style="min-width: 100px">
                 <q-item clickable v-close-popup @click="openURL(item.short_url)">
-                  <q-item-section>Open site in new window</q-item-section>
+                  <q-item-section>View site</q-item-section>
+                  <q-item-section avatar>
+                    <q-icon name="open_in_new" />
+                  </q-item-section>
                 </q-item>
                 <q-separator />
                 <q-item clickable v-close-popup class="text-red" @click="deleteSite(item)">
