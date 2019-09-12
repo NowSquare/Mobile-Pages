@@ -27,13 +27,11 @@
 
           <q-scroll-area class="fit">
             <div class="q-pa-sm">
-
-              <q-item v-for="page in getPages()" :key="page.id" clickable :style="{'color': site.design.drawerTextColor}" :to="editor ? null : '/' + site.path + '/' + page.path">
+              <q-item v-for="page in getPages()" :key="page.uuid" :active="page.uuid === sitePage.uuid" ripple :style="{'color': site.design.drawerTextColor}" :to="editor ? null : '/' + site.path + '/' + page.path">
                 <q-item-section>
                   <q-item-label>{{ page.name }}</q-item-label>
                 </q-item-section>
               </q-item>
-
             </div>
           </q-scroll-area>
         </q-drawer>
@@ -72,6 +70,10 @@
     background-attachment: fixed;
     background-size: cover;
   }
+  .q-item--active {
+    background: #424242 !important;
+    color: #fafafa !important;
+  }
 </style>
 
 <script>
@@ -109,7 +111,7 @@ export default {
   created () {
     this.siteSlug = this.$route.params.siteSlug || null
     this.pageSlug = this.$route.params.pageSlug || null
-    console.log(this.pageSlug)
+
     if (this.siteSlug !== null) {
       this.$q.loading.show({
         delay: 40
@@ -159,8 +161,8 @@ export default {
           this.status = response.data.status
           if (response.data.status === 200) {
             this.site = response.data
-            document.title = response.data.pages[0].name
             this.globals.currentPage = response.data.pageUuid
+            document.title = response.data.pages[0].name + ' - ' + this.sitePage.name
           }
         })
     }
@@ -171,6 +173,7 @@ export default {
       for (let page in pages) {
         if (pageSlug === pages[page].path) {
           this.globals.currentPage = pages[page].uuid
+          document.title = this.site.pages[0].name + ' - ' + this.sitePage.name
           return
         }
       }

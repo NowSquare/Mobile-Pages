@@ -73,7 +73,7 @@
 
             <q-card-actions>
               <q-btn type="submit" :loading="loading" color="green" class="full-width no-border-radius shadow-0" size="lg">Login</q-btn>
-              <q-btn color="primary" label="Click here for demo login" v-if="config.demo" no-caps size="18px" @click="form.email.value='user@example.com';form.password.value='welcome123'" class="q-mt-sm full-width no-border-radius shadow-0"/>
+              <q-btn color="primary" label="Click here for demo login" v-if="config.demo" no-caps size="18px" @click="form.email.value='user@example.com';form.password.value='welcome123';onSubmit()" class="q-mt-sm full-width no-border-radius shadow-0"/>
             </q-card-actions>
           </q-form>
         </q-card>

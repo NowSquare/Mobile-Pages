@@ -451,7 +451,7 @@ export default {
   },
   beforeRouteLeave (to, from, next) {
     if (this.siteChangesDetected || this.pageChangesDetected) {
-      this.$root.$confirm('Do you really want to leave? You have unsaved changes.', { icon: 'exit_to_app' }).then((confirm) => {
+      this.$root.$confirm('Do you want to leave? Unsaved changes will be lost.', { icon: 'exit_to_app', width: 400, agreeLabel: 'Continue without saving' }).then((confirm) => {
         if (confirm) {
           next()
         }
@@ -719,7 +719,7 @@ export default {
 
       if (this.pageChangesDetected) {
         this.globals.currentPage = this.currentPage
-        this.$root.$confirm('Do you want to continue and lose all unsaved changes you have made to this page?', { icon: 'mdi-file-undo' }).then((confirm) => {
+        this.$root.$confirm('Do you want to leave? Unsaved changes will be lost.', { icon: 'mdi-file-undo', width: 400, agreeLabel: 'Continue without saving' }).then((confirm) => {
           if (confirm) {
             this.site.pages[0].children = this.copyObject(this.undoSitePages)
             this.globals.currentPage = this.nextPage

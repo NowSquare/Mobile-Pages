@@ -64,7 +64,7 @@ const routes = [
       }
     ],
     meta: {
-      auth: { roles: [1, 2], redirect: { name: 'login' }, forbiddenRedirect: '/' }
+      auth: { roles: [1], redirect: { name: 'login' }, forbiddenRedirect: '/' }
     }
   },
   {
@@ -88,7 +88,7 @@ const routes = [
       }
     ],
     meta: {
-      auth: { roles: [2], redirect: { name: 'login' }, forbiddenRedirect: '/' }
+      auth: { roles: [1], redirect: { name: 'login' }, forbiddenRedirect: '/' }
     }
   },
   {
@@ -102,7 +102,7 @@ const routes = [
       }
     ],
     meta: {
-      auth: { roles: [2], redirect: { name: 'login' }, forbiddenRedirect: '/' }
+      auth: { roles: [1], redirect: { name: 'login' }, forbiddenRedirect: '/' }
     }
   },
   {
@@ -116,7 +116,7 @@ const routes = [
       }
     ],
     meta: {
-      auth: { roles: [2], redirect: { name: 'login' }, forbiddenRedirect: '/' }
+      auth: { roles: [1], redirect: { name: 'login' }, forbiddenRedirect: '/' }
     }
   }
 ]

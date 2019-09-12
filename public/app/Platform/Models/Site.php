@@ -118,7 +118,7 @@ class Site extends Model implements HasMedia
      */
     public function getTestUrlAttribute($short = false) {
       $slug = ($short) ? $this->short_slug : $this->slug;
-      return ($this->account != null) ? request()->getSchemeAndHttpHost() . '/#/-/' . $slug : null;
+      return ($this->account != null) ? config('general.app_url', request()->getSchemeAndHttpHost()) . '/#/-/' . $slug : null;
     }
 
     /**
@@ -176,7 +176,7 @@ class Site extends Model implements HasMedia
 
       $response = [
         'status' => 200,
-        'host' => request()->getSchemeAndHttpHost(),
+        'host' => config('general.app_url', request()->getSchemeAndHttpHost()),
         'path' => '-/' . $this->short_slug,
         'pageUuid' => $pageUuid,
         'design' => $sitePages[0]->getDesign(),

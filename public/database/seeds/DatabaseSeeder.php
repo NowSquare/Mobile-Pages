@@ -40,8 +40,8 @@ class DatabaseSeeder extends Seeder
         $user = new \App\User;
 
         $user->role = 1;
-        $user->name = 'Admin';
-        $user->email = 'admin@example.com';
+        $user->name = 'User';
+        $user->email = 'user@example.com';
         $user->password = bcrypt('welcome123');
         $user->language = $language;
         $user->locale = $locale;
@@ -51,18 +51,6 @@ class DatabaseSeeder extends Seeder
         //$user->app_contact = config('general.mail_contact');
         //$user->app_mail_name_from =  config('general.mail_name_from');
         //$user->app_mail_address_from =  config('general.mail_address_from');
-        //$user->app_color = '#304FFE';
-        $user->save();
-
-        $user = new \App\User;
-
-        $user->role = 2;
-        $user->name = 'User';
-        $user->email = 'user@example.com';
-        $user->password = bcrypt('welcome123');
-        $user->language = $language;
-        $user->locale = $locale;
-        $user->timezone = config('general.app_timezone');
         $user->save();
 
         Eloquent::unguard();

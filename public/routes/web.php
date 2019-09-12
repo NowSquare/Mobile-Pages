@@ -1,14 +1,17 @@
 <?php
+/*
+ |--------------------------------------------------------------------------
+ | Installation
+ |--------------------------------------------------------------------------
+ */
+
+Route::get('install', '\Platform\Controllers\InstallationController@getInstall')->name('installation');
+Route::post('install', '\Platform\Controllers\InstallationController@postInstall');
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| App routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
 Route::get('/', '\Platform\Controllers\App\AppController@index');
