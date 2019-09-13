@@ -18,10 +18,10 @@
     </div>
   </div>
   <div class="container">
-    <div class="pt-5 pb-4 text-center"> <img class="d-block mx-auto mb-4" src="/assets/statics/icons/mstile-310x310.png" alt="Mobile Pages" width="72" height="72">
+    <div class="pt-4 pb-4 text-center"> <img class="d-block mx-auto mb-4" src="/assets/statics/icons/mstile-310x310.png" alt="Mobile Pages" width="72" height="72">
       <h2>Mobile Pages</h2>
-      <p class="lead">You can change any setting after installation by modifying the <code>.env</code> file in the webroot.<br>
-        If you want to reinstall the script, delete the <code>.env</code> file from the webroot.</p>
+      <p class="lead">This configuration is saved in the <code>.env</code> file in the webroot.<br>
+        If you want to reinstall the script, delete the <code>.env</code> file and this installation page will appear.</p>
     </div>
     <div class="row">
       <div class="col-md-8 offset-md-2 order-md-1">
@@ -31,20 +31,27 @@
             <h5 class="card-header">Application</h5>
             <div class="card-body">
               <div class="row">
-                <div class="col-md-8 mb-3">
+                <div class="col-md-6 mb-3">
                   <label for="APP_NAME">Name</label>
                   <input type="text" class="form-control rounded-0" id="APP_NAME" name="APP_NAME" placeholder="" value="Mobile Pages" required>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-md-8 mb-3">
-                  <label for="APP_URL">Url</label>
+                <div class="col-md-6 mb-3">
+                  <label for="APP_URL">Url [<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Include scheme (http or https). Can't be subdirectory, must be domain or subdomain.">?</a>]</label>
                   <input type="text" class="form-control rounded-0" id="APP_URL" name="APP_URL" placeholder="" value="{{ \Request::getSchemeAndHttpHost() }}" required>
-                  <small class="form-text text-muted">Enter the full url including scheme (http or https), but without a trailing slash.</small>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div class="card mb-4 rounded-0 shadow-sm">
+            <h5 class="card-header">Login</h5>
+            <div class="card-body">
               <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-6 mb-3">
+                  <label for="name">Name</label>
+                  <input type="text" class="form-control rounded-0" id="name" name="name" placeholder="" value="Admin" required>
+                </div>
+                <div class="col-md-6 mb-3">
                   <label for="APP_TIMEZONE">Timezone</label>
                   <select class="custom-select d-block rounded-0 w-100" id="APP_TIMEZONE" name="APP_TIMEZONE" required>
 <?php
@@ -54,85 +61,16 @@ foreach ($tzList as $val => $text) {
 }
 ?>
                   </select>
-                  <small class="form-text text-muted">Can be changed later.</small>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card mb-4 rounded-0 shadow-sm">
-            <h5 class="card-header">Admin</h5>
-            <div class="card-body">
-              <p class="card-text">These are the credentials of the admin user to log in with after installation.</p>
-              <div class="row">
-                <div class="col-md-8 mb-3">
-                  <label for="name">Name</label>
-                  <input type="text" class="form-control rounded-0" id="name" name="name" placeholder="" value="Admin" required>
                 </div>
               </div>
               <div class="row">
-                <div class="col-md-8 mb-3">
+                <div class="col-md-6 mb-3">
                   <label for="email" class="form-label required">E-mail</label>
                   <input id="email" name="email" type="email" placeholder="" value="" class="form-control rounded-0" required>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-md-8 mb-3">
-                  <label for="pass">Password</label>
+                <div class="col-md-6 mb-3">
+                  <label for="pass">Password [<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Must have at least 8 characters.">?</a>]</label>
                   <input type="password" class="form-control rounded-0" id="pass" name="pass" placeholder="" minlength="8" value="" required>
-                  <small class="form-text text-muted">Password must have at least 8 characters.</small>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card mb-4 rounded-0 shadow-sm">
-            <h5 class="card-header"><a role="button" style="color: inherit" data-toggle="collapse" href="#collapseDb" aria-expanded="false">Database (optional)</a></h5>
-            <div class="card-body collapse" id="collapseDb">
-              <div class="row">
-                <div class="col-md-8 mb-3">
-                  <label for="DB_CONNECTION" class="form-label required">Database</label>
-                  <select id="DB_CONNECTION" name="DB_CONNECTION" class="form-control rounded-0" required>
-                    <option value="sqlite">SQLite</option>
-                    <option value="mysql">MySQL</option>
-                  </select>
-                  <small class="form-text text-muted">SQLite is recommended, in most cases it is the best choice.</small>
-                </div>
-              </div>
-
-              <div id="settingsMySQL" class="d-none">
-                <p class="card-text">MySQL version >= 5.7.8 or MariaDB >= 10.2.7 is required.</p>
-                <div class="row">
-                  <div class="col-sm-8">
-                    <div class="form-group">
-                      <label for="DB_HOST" class="form-label">Host</label>
-                      <input id="DB_HOST" name="DB_HOST" type="text" placeholder="127.0.0.1" value="127.0.0.1" maxlength="32" class="form-control rounded-0">
-                    </div>
-                  </div>
-                  <div class="col-sm-4">
-                    <div class="form-group">
-                      <label for="DB_PORT" class="form-label">Port</label>
-                      <input id="DB_PORT" name="DB_PORT" type="text" placeholder="3306" value="3306" maxlength="10" class="form-control rounded-0">
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-8 mb-3">
-                    <label for="DB_DATABASE" class="form-label required">Database name</label>
-                    <input id="DB_DATABASE" name="DB_DATABASE" type="text" placeholder="" value="" class="form-control rounded-0">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-8 mb-3">
-                    <label for="DB_USERNAME" class="form-label required">Username</label>
-                    <input id="DB_USERNAME" name="DB_USERNAME" type="text" placeholder="" value="" class="form-control rounded-0">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-8">
-                    <label for="DB_PASSWORD" class="form-label">Password</label>
-                    <input id="DB_PASSWORD" name="DB_PASSWORD" type="text" placeholder="" class="form-control rounded-0">
-                  </div>
                 </div>
               </div>
             </div>
@@ -148,7 +86,7 @@ foreach ($tzList as $val => $text) {
                     <option value="mail">mail</option>
                     <option value="mailgun">Mailgun</option>
                   </select>
-                  <small class="form-text text-muted">The "mail" driver works on <strong>most</strong> servers by default, however it usually gets a high spam rating.</small>
+                  <small class="form-text text-muted">The "mail" driver works on <strong>most</strong> servers by default.</small>
                 </div>
               </div>
 
@@ -204,10 +142,63 @@ foreach ($tzList as $val => $text) {
             </div>
           </div>
 
+
+          <div class="card mb-4 rounded-0 shadow-sm">
+            <h5 class="card-header"><a role="button" style="color: inherit" data-toggle="collapse" href="#collapseDb" aria-expanded="false">Database (optional)</a></h5>
+            <div class="card-body collapse" id="collapseDb">
+              <div class="row">
+                <div class="col-md-8 mb-3">
+                  <label for="DB_CONNECTION" class="form-label required">Database</label>
+                  <select id="DB_CONNECTION" name="DB_CONNECTION" class="form-control rounded-0" required>
+                    <option value="sqlite">SQLite</option>
+                    <option value="mysql">MySQL</option>
+                  </select>
+                  <small class="form-text text-muted">SQLite is recommended. It's the best choice in 99% of the cases.</small>
+                </div>
+              </div>
+
+              <div id="settingsMySQL" class="d-none">
+                <p class="card-text">MySQL version >= 5.7.8 or MariaDB >= 10.2.7 is required.</p>
+                <div class="row">
+                  <div class="col-sm-8">
+                    <div class="form-group">
+                      <label for="DB_HOST" class="form-label">Host</label>
+                      <input id="DB_HOST" name="DB_HOST" type="text" placeholder="127.0.0.1" value="127.0.0.1" maxlength="32" class="form-control rounded-0">
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <label for="DB_PORT" class="form-label">Port</label>
+                      <input id="DB_PORT" name="DB_PORT" type="text" placeholder="3306" value="3306" maxlength="10" class="form-control rounded-0">
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-8 mb-3">
+                    <label for="DB_DATABASE" class="form-label required">Database name</label>
+                    <input id="DB_DATABASE" name="DB_DATABASE" type="text" placeholder="" value="" class="form-control rounded-0">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-8 mb-3">
+                    <label for="DB_USERNAME" class="form-label required">Username</label>
+                    <input id="DB_USERNAME" name="DB_USERNAME" type="text" placeholder="" value="" class="form-control rounded-0">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-8">
+                    <label for="DB_PASSWORD" class="form-label">Password</label>
+                    <input id="DB_PASSWORD" name="DB_PASSWORD" type="text" placeholder="" class="form-control rounded-0">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="card mb-4 rounded-0 shadow-sm">
             <h5 class="card-header"><a role="button" style="color: inherit" data-toggle="collapse" href="#collapsePusher" aria-expanded="false">Pusher (optional)</a></h5>
             <div class="card-body collapse" id="collapsePusher">
-              <p class="card-text">If you haven't set up a Pusher app, you can leave these settings empty for now and change them later in the <code>.env</code> file in the webroot.</p>
+              <p class="card-text">If you haven't set up a Pusher app, you can leave these settings empty for now and change them later in the <code>.env</code> file.</p>
               <p class="card-text">Create a new app in your <a href="https://pusher.com/" target="_blank">pusher.com</a> dashboard, you only have to enter a name and select a cluster location. Other options are not required.</p>
               <div class="row">
                 <div class="col-sm-8">
@@ -257,6 +248,8 @@ foreach ($tzList as $val => $text) {
 
   <script>
   $(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+
     $('#frmInstall').on('submit', function() {
       $('#pageLoader').removeClass('d-none');
     });

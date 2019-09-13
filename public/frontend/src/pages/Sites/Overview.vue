@@ -47,13 +47,14 @@
       <q-btn
         v-if="sites.length === 0"
         class="small-card text-grey-10"
-        style="height: 280px"
-        label="Create a new site"
+        style="height: 200px; line-height: 38px"
         icon="mdi-qrcode"
-        size="32px"
+        size="56px"
         no-caps
         :to="{ name: 'site.new' }"
-      />
+      >
+        <div style="font-size: 18px">Create a new site</div>
+      </q-btn>
     </div>
 
   </q-page>
@@ -100,7 +101,7 @@ export default {
           })
           this.$axios.post('site/delete-site', {
             locale: this.$i18n.locale,
-            site_uuid: site.uuid
+            siteUuid: site.uuid
           })
             .then(res => {
               if (typeof res.data.msg !== 'undefined') {

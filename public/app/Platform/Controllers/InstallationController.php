@@ -47,6 +47,12 @@ class InstallationController extends \App\Http\Controllers\Controller {
 
     set_time_limit(500);
 
+    // Check if database exists
+    $sqlite = database_path('database.sqlite');
+    if (! \File::exists($sqlite)) {
+      \File::put($sqlite, '');
+    }
+
     $name = $request->input('name', '');
     $email = $request->input('email', '');
     $pass = $request->input('pass', '');
