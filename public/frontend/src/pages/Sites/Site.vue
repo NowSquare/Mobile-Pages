@@ -27,7 +27,7 @@
 
           <q-scroll-area class="fit">
             <div class="q-pa-sm">
-              <q-item v-for="page in getPages()" :key="page.uuid" :active="page.uuid === sitePage.uuid" ripple :style="{'color': site.design.drawerTextColor}" :to="editor ? null : '/' + site.path + '/' + page.path">
+              <q-item v-for="page in getPages()" :key="page.uuid" :active="page.uuid === sitePage.uuid" ripple :style="{'background-color': (page.uuid === sitePage.uuid) ? site.design.drawerActiveBgColor : site.design.drawerBgColor, 'color': (page.uuid === sitePage.uuid) ? site.design.drawerActiveTextColor : site.design.drawerTextColor}" :to="editor ? null : '/' + site.path + '/' + page.path">
                 <q-item-section>
                   <q-item-label>{{ page.name }}</q-item-label>
                 </q-item-section>
@@ -63,7 +63,7 @@
     </div>
 </template>
 
-<style>
+<style scoped>
   .siteBg {
     background-repeat: no-repeat;
     background-position: center center;
@@ -71,8 +71,6 @@
     background-size: cover;
   }
   .q-item--active {
-    background: #424242 !important;
-    color: #fafafa !important;
   }
 </style>
 

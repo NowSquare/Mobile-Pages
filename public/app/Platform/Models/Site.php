@@ -145,7 +145,7 @@ class Site extends Model implements HasMedia
      * @return array
      */
     public function getSite($pageSlug = null) {
-      $sitePages = \Platform\Models\Site::whereDescendantOrSelf($this)->get();
+      $sitePages = \Platform\Models\Site::whereDescendantOrSelf($this)->defaultOrder()->get();
 
       $children = [];
       foreach ($sitePages as $index => $page) {
@@ -161,10 +161,17 @@ class Site extends Model implements HasMedia
 
           $content['settings'] = $settings;
 
+          $position = 'amidst';
+          if ($index == 1) $position = 'first';
+          if ($index == count($sitePages) - 1) $position = 'last';
+          if (count($sitePages) == 2) $position = 'single';
+
           $children[] = [
             'uuid' => $page->uuid,
             'name' => $page->name,
             'path' => $page->slug,
+            'body' => 'story',
+            'position' => $position,
             'content' => $content,
             'module' => 'Content',
             'icon' => 'notes'
@@ -211,7 +218,9 @@ class Site extends Model implements HasMedia
         'titleBarBgColor' => $this->design['titleBarBgColor'] ?? '#607d8b',
         'titleBarTextColor' => $this->design['titleBarTextColor'] ?? '#eeeeee',
         'drawerBgColor' => $this->design['drawerBgColor'] ?? '#eeeeee',
-        'drawerTextColor' => $this->design['drawerTextColor'] ?? '#222222'
+        'drawerTextColor' => $this->design['drawerTextColor'] ?? '#222222',
+        'drawerActiveBgColor' => $this->design['drawerActiveBgColor'] ?? '#424242',
+        'drawerActiveTextColor' => $this->design['drawerActiveTextColor'] ?? '#fafafa'
       ];
 
       return $response;

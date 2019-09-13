@@ -27,19 +27,6 @@ class SiteController extends Controller {
      */
 
     /**
-     * Test
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function getTest() {
-      $uuid = 'adfa2c83-b61a-4ef5-b33b-c7bf002759e1';
-      $site = \Platform\Models\Site::where('uuid', $uuid)->first();
-      $sitePages = \Platform\Models\Site::whereDescendantOrSelf($site)->get();
-      dd($sitePages);
-      return response()->json($sites, 200);
-    }
-
-    /**
      * Get all sites for user
      *
      * @return \Symfony\Component\HttpFoundation\Response
@@ -112,7 +99,6 @@ class SiteController extends Controller {
 
         return response()->json(['status' => 'success', 'msg' => trans('app.site_created'), 'uuid' => $site->uuid], 200);
       }
-
       return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
     }
 
@@ -125,7 +111,7 @@ class SiteController extends Controller {
       $locale = request('locale', config('system.default_language'));
       $sitePost = request('site', null);
       if ($sitePost !== null) $sitePost = json_decode($sitePost);
-      $site_uuid = request('site_uuid', null);
+      $siteUuid = request('siteUuid', null);
 
       $v = Validator::make((array) $sitePost, [
         'siteName' => 'required|max:64',
@@ -138,7 +124,7 @@ class SiteController extends Controller {
         ], 422);
       }
 
-      $site = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $site_uuid)->first();
+      $site = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $siteUuid)->first();
 
       if ($site !== null) {
         // Parse images
@@ -174,7 +160,6 @@ class SiteController extends Controller {
 
         return response()->json(['status' => 'success', 'msg' => trans('app.saved_successfully')], 200);
       }
-
       return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
     }
 
@@ -185,15 +170,14 @@ class SiteController extends Controller {
      */
     public function postDeleteSite(Request $request) {
       $locale = request('locale', config('system.default_language'));
-      $site_uuid = request('site_uuid', null);
+      $siteUuid = request('siteUuid', null);
 
-      $site = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $site_uuid)->first();
+      $site = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $siteUuid)->first();
 
       if ($site !== null) {
         $site->delete();
         return response()->json(['status' => 'success', 'msg' => trans('app.site_deleted')], 200);
       }
-
       return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
     }
 
@@ -204,7 +188,7 @@ class SiteController extends Controller {
      */
     public function postAddPage(Request $request) {
       $locale = request('locale', config('system.default_language'));
-      $site_uuid = request('site_uuid', null);
+      $siteUuid = request('siteUuid', null);
       $module = request('module', null);
       $name = request('name', null);
 
@@ -219,7 +203,7 @@ class SiteController extends Controller {
         ], 422);
       }
 
-      $site = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $site_uuid)->first();
+      $site = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $siteUuid)->first();
 
       if ($site !== null) {
         $sitePage = new \Platform\Models\Site;
@@ -229,7 +213,6 @@ class SiteController extends Controller {
 
         return response()->json(['status' => 'success', 'msg' => trans('app.page_created'), 'uuid' => $sitePage->uuid], 200);
       }
-
       return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
     }
 
@@ -242,7 +225,7 @@ class SiteController extends Controller {
       $locale = request('locale', config('system.default_language'));
       $page = request('page', null);
       if ($page !== null) $page = json_decode($page);
-      $site_uuid = request('site_uuid', null);
+      $siteUuid = request('siteUuid', null);
 
       $v = Validator::make((array) $page, [
         'name' => 'required|max:64',
@@ -292,7 +275,29 @@ class SiteController extends Controller {
 
         return response()->json(['status' => 'success', 'msg' => trans('app.saved_successfully')], 200);
       }
+      return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
+    }
 
+    /**
+     * Move site page
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function postMovePage(Request $request) {
+      $locale = request('locale', config('system.default_language'));
+      $pageUuid = request('pageUuid', null);
+      $direction = request('direction', null);
+
+      $sitePage = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $pageUuid)->first();
+
+      if ($sitePage !== null) {
+        if ($direction == 'up') {
+          $sitePage->up();
+        } else {
+          $sitePage->down();
+        }
+        return response()->json(['status' => 'success', 'msg' => trans('app.page_moved')], 200);
+      }
       return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
     }
 
@@ -303,9 +308,9 @@ class SiteController extends Controller {
      */
     public function postDeletePage(Request $request) {
       $locale = request('locale', config('system.default_language'));
-      $page_uuid = request('page_uuid', null);
+      $pageUuid = request('pageUuid', null);
 
-      $sitePage = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $page_uuid)->first();
+      $sitePage = \Platform\Models\Site::where('created_by', auth()->user()->id)->where('uuid', $pageUuid)->first();
 
       if ($sitePage !== null) {
         // Check if it is last page (at least one page is required)
@@ -317,7 +322,6 @@ class SiteController extends Controller {
           return response()->json(['status' => 'error', 'msg' => trans('app.one_page_required')], 200);
         }
       }
-
       return response()->json(['status' => 'error', 'msg' => trans('app.processing_error')], 200);
     }
 }

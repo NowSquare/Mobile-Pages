@@ -13,9 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-// Test route
-Route::get('test', '\Platform\Controllers\Site\SiteController@getTest');
-
 // Public routes
 Route::get('site-by-slug', '\Platform\Controllers\Site\SiteController@getSiteBySlug');
 
@@ -34,6 +31,7 @@ Route::group(['middleware' => 'auth:api'], function() {
   Route::post('site/delete-site', '\Platform\Controllers\Site\SiteController@postDeleteSite');
   Route::post('site/add-page', '\Platform\Controllers\Site\SiteController@postAddPage');
   Route::post('site/save-page', '\Platform\Controllers\Site\SiteController@postSavePage');
+  Route::post('site/move-page', '\Platform\Controllers\Site\SiteController@postMovePage');
   Route::post('site/delete-page', '\Platform\Controllers\Site\SiteController@postDeletePage');
 });
 

@@ -12,6 +12,7 @@ return [
     "saved_successfully" => "Changes saved successfully",
     "item_deleted" => "Item deleted",
     "page_created" => "Page created",
+    "page_moved" => "Page moved",
     "page_deleted" => "Page deleted",
     "site_created" => "Site created",
     "site_deleted" => "Site deleted",

@@ -78,7 +78,18 @@ Site - Tree
                         label-key="name"
                         :expanded.sync="treeExpandedKeys"
                         @update:selected="checkForPageChanges"
-                      />
+                      >
+                        <template v-slot:body-story="prop">
+                          <div v-if="prop.node.position !== 'single'">
+                            <q-btn flat icon="arrow_upward" :disabled="prop.node.position === 'first'" size="9px" color="grey-9" class="q-pa-none q-px-xs" @click="movePageConfirm(prop.node.uuid, 'up')">
+                              <q-tooltip>Move page up</q-tooltip>
+                            </q-btn>
+                            <q-btn flat icon="arrow_downward" :disabled="prop.node.position === 'last'" size="9px" color="grey-9" class="q-pa-none q-px-xs" @click="movePageConfirm(prop.node.uuid, 'down')">
+                              <q-tooltip>Move page down</q-tooltip>
+                            </q-btn>
+                          </div>
+                        </template>
+                      </q-tree>
                     </div>
                   </q-tab-panel>
 <!--
@@ -131,12 +142,12 @@ Site - Design tab - Background
                         <div class="q-pa-lg">
 
                           <ColorPicker
-                            label="Site background color"
+                            label="Background color"
                             v-model="site.design.bgColor"
                           />
 
                           <ColorPicker
-                            label="Site text color"
+                            label="Text color"
                             v-model="site.design.textColor"
                           />
 
@@ -171,12 +182,12 @@ Site - Design tab - Header
                         <div class="q-pa-lg">
 
                           <ColorPicker
-                            label="Header background color"
+                            label="Background color"
                             v-model="site.design.headerBgColor"
                           />
 
                           <ColorPicker
-                            label="Header text color"
+                            label="Text color"
                             v-model="site.design.headerTextColor"
                           />
 
@@ -199,12 +210,12 @@ Site - Design tab - Title toolbar
                         <div class="q-pa-lg">
 
                           <ColorPicker
-                            label="Toolbar background color"
+                            label="Background color"
                             v-model="site.design.titleBarBgColor"
                           />
 
                           <ColorPicker
-                            label="Toolbar text color"
+                            label="Text color"
                             v-model="site.design.titleBarTextColor"
                           />
 
@@ -226,14 +237,28 @@ Site - Design tab - Side navigation
                         <q-separator />
                         <div class="q-pa-lg">
 
+                          <div class="text-body2 text-weight-bold">Menu background</div>
+
                           <ColorPicker
-                            label="Side navigation background color"
+                            label="Background color"
                             v-model="site.design.drawerBgColor"
                           />
 
                           <ColorPicker
-                            label="Side navigation text color"
+                            label="Text color"
                             v-model="site.design.drawerTextColor"
+                          />
+
+                          <div class="q-mt-md text-body2 text-weight-bold">Active button</div>
+
+                          <ColorPicker
+                            label="Background color"
+                            v-model="site.design.drawerActiveBgColor"
+                          />
+
+                          <ColorPicker
+                            label="Text color"
+                            v-model="site.design.drawerActiveTextColor"
                           />
 
                         </div>
@@ -564,7 +589,7 @@ export default {
       let frmPage = new FormData()
       frmPage.append('locale', this.$i18n.locale)
       frmPage.append('site', JSON.stringify(siteData))
-      frmPage.append('site_uuid', this.globals.uuid)
+      frmPage.append('siteUuid', this.globals.uuid)
 
       this.$axios.post('site/save-site', frmPage, { headers: { 'content-type': 'multipart/form-data' } })
         .then(res => {
@@ -602,7 +627,7 @@ export default {
           this.leftColumnLoading = true
           this.$axios.post('site/delete-site', {
             locale: this.$i18n.locale,
-            site_uuid: this.globals.uuid
+            siteUuid: this.globals.uuid
           })
             .then(res => {
               if (typeof res.data.msg !== 'undefined') {
@@ -644,7 +669,7 @@ export default {
           this.leftColumnLoading = true
           this.$axios.post('site/add-page', {
             locale: this.$i18n.locale,
-            site_uuid: this.globals.uuid,
+            siteUuid: this.globals.uuid,
             module: item,
             name: confirm.input
           })
@@ -676,6 +701,46 @@ export default {
         }
       })
     },
+    movePageConfirm (pageUuid, direction) {
+      if (this.siteChangesDetected || this.pageChangesDetected) {
+        this.$root.$confirm('Unsaved changes will be lost.', { icon: 'mdi-file-undo', width: 400, agreeLabel: 'Continue' }).then((confirm) => {
+          if (confirm) {
+            this.movePage(pageUuid, direction)
+          }
+        })
+      } else {
+        this.movePage(pageUuid, direction)
+      }
+    },
+    movePage (pageUuid, direction) {
+      this.leftColumnLoading = true
+      this.$axios.post('site/move-page', {
+        locale: this.$i18n.locale,
+        pageUuid: pageUuid,
+        direction: direction
+      })
+        .then(res => {
+          if (typeof res.data.msg !== 'undefined') {
+            this.$q.notify({
+              icon: (res.data.status === 'success') ? 'done' : 'error',
+              position: 'bottom-left',
+              message: res.data.msg
+            })
+          }
+          if (res.data.status === 'success') {
+            this.loadSite()
+          }
+          this.siteChangesDetected = false
+          this.pageChangesDetected = false
+        })
+        .catch(err => {
+          let res = err.response.data
+          console.log(res)
+        })
+        .finally(() => {
+          this.leftColumnLoading = false
+        })
+    },
     deletePage () {
       if (parseInt(this.site.pages[0].children.length) === 1) {
         this.$root.$confirm('You can\'t delete this page, a site must have at least one page.', { icon: 'warning', showCancel: false, agreeColor: 'grey-9', agreeLabel: 'OK' }).then((confirm) => {
@@ -688,7 +753,7 @@ export default {
             this.rightColumnLoading = true
             this.$axios.post('site/delete-page', {
               locale: this.$i18n.locale,
-              page_uuid: this.sitePage.uuid
+              pageUuid: this.sitePage.uuid
             })
               .then(res => {
                 if (typeof res.data.msg !== 'undefined') {
@@ -743,7 +808,7 @@ export default {
       let frmPage = new FormData()
       frmPage.append('locale', this.$i18n.locale)
       frmPage.append('page', JSON.stringify(this.sitePage))
-      frmPage.append('site_uuid', this.globals.uuid)
+      frmPage.append('siteUuid', this.globals.uuid)
 
       this.$axios.post('site/save-page', frmPage, { headers: { 'content-type': 'multipart/form-data' } })
         .then(res => {

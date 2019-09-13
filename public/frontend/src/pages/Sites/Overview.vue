@@ -20,7 +20,7 @@
           <div class="text-body1">{{ item.name }}</div>
         </q-card-section>
 
-        <q-separator />
+        <q-separator style="min-height: 1px;" />
 
         <q-card-actions class="col-auto">
           <q-btn flat :to="{ name: 'site.edit', params: { 'uuid': item.uuid } }" label="Edit" icon="mdi-square-edit-outline"/>
