@@ -230,14 +230,14 @@ foreach ($tzList as $val => $text) {
           </div>
 
           <hr class="mb-4">
-          <button class="btn btn-primary btn-lg btn-block rounded-0" type="submit">Start installation</button>
+          <button class="btn btn-primary btn-lg btn-block rounded-0" type="submit">Install</button>
         </form>
       </div>
     </div>
     <footer class="my-5 pt-5 text-muted text-center text-small">
       <p class="mb-1">&copy; 2019 Mobile Pages</p>
       <ul class="list-inline">
-        <li class="list-inline-item"><a href="https://nowsquare.com/">Website</a></li>
+        <li class="list-inline-item"><a href="https://codecanyon.net/user/businessgrowthapps/portfolio">Website</a></li>
       </ul>
     </footer>
   </div>
