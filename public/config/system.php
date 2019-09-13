@@ -1,10 +1,6 @@
 <?php
 
 return [
-    // Trial settings
-    'trial_days' => 7,
-    'grace_period_days' => 3,
-
     // Available languages (multi-language is not supported yet)
     'available_languages' => [
       'en' => 'English'

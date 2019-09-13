@@ -21,7 +21,7 @@ class DemoContentSeeder extends Seeder
       $faker = Faker::create();
 
       $account_id = 1;
-      $created_by = 2;
+      $created_by = 1;
 
       $site_count = 12;
       $site_min_pages_count = 4;
