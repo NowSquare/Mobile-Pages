@@ -1,5 +1,5 @@
 <template>
-  <q-page class="fit row justify-center q-pa-lg bg-blue-8">
+  <q-page class="fit row justify-center q-pa-lg bg-light-blue-8">
     <div class="col-12 col-sm-4 col-lg-3 col-xl-2 self-center" style="min-width: 380px">
       <div class="fit self-center shadow-22">
         <q-card flat class="no-border-radius bg-grey-1 text-grey-10 full-width">

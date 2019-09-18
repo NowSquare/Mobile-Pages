@@ -170,7 +170,7 @@ class Site extends Model implements HasMedia
             'uuid' => $page->uuid,
             'name' => $page->name,
             'path' => $page->slug,
-            'body' => 'story',
+            'header' => 'move',
             'position' => $position,
             'content' => $content,
             'module' => 'Content',

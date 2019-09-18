@@ -1,14 +1,15 @@
 <template>
-  <q-page class="flex">
-
-    <div class="fit q-pa-lg q-gutter-lg row">
+  <q-page class="fit row wrap justify-start items-start content-start q-pr-lg q-pb-lg bg-light-blue-8">
+    <div
+      v-for="(item, index) in sites" :key="index"
+      class="col-6 col-sm-4 col-md-3 col-lg-2"
+    >
       <q-card
-        v-for="(item, index) in sites" :key="index"
-        class="small-card text-grey-9 column"
+        class="card text-blue-grey-9 bg-blue-grey-1 q-ml-lg q-mt-lg column"
       >
         <q-card-section class="col-auto">
           <QRCode
-            class="qr-100"
+            class="qr-100 q-mb-xs"
             :text="item.short_url"
             color="#000000"
             bg-color="transparent"
@@ -16,8 +17,8 @@
           />
         </q-card-section>
 
-        <q-card-section class="col">
-          <div class="text-body1">{{ item.name }}</div>
+        <q-card-section class="col" style="max-width: 100%">
+          <div class="text-body1 ellipsis-3-lines">{{ item.name }}</div>
         </q-card-section>
 
         <q-separator style="min-height: 1px;" />
@@ -25,9 +26,9 @@
         <q-card-actions class="col-auto">
           <q-btn flat :to="{ name: 'site.edit', params: { 'uuid': item.uuid } }" label="Edit" icon="mdi-square-edit-outline"/>
           <q-space />
-          <q-btn flat round color="grey-10" icon="more_vert">
+          <q-btn flat size="12px" round color="grey-10" icon="more_vert">
             <q-menu>
-              <q-list style="min-width: 100px">
+              <q-list style="min-width: 150px">
                 <q-item clickable v-close-popup @click="openURL(item.short_url)">
                   <q-item-section>View site</q-item-section>
                   <q-item-section avatar>
@@ -43,24 +44,34 @@
           </q-btn>
         </q-card-actions>
       </q-card>
+    </div>
 
-      <q-btn
-        v-if="sites.length === 0"
-        class="small-card text-grey-10"
-        style="height: 200px; line-height: 38px"
-        icon="mdi-qrcode"
-        size="56px"
-        no-caps
-        :to="{ name: 'site.new' }"
+    <div
+      class="col-6 col-sm-4 col-md-3 col-lg-2"
+    >
+      <q-card
+        class="card text-grey-9 bg-grey-2 q-ml-lg q-mt-lg column"
       >
-        <div style="font-size: 18px">Create a new site</div>
-      </q-btn>
+        <q-card-section class="col-auto text-center">
+          <q-icon name="mdi-qrcode" size="148px" class="text-grey-5 q-mt-md"/>
+        </q-card-section>
+
+        <q-card-section class="col text-center">
+        </q-card-section>
+
+        <q-separator style="min-height: 1px;" />
+
+        <q-card-actions class="col-auto full-width">
+          <q-btn flat class="full-width" color="grey-10" :to="{ name: 'site.new' }" label="New site" icon="add"/>
+          <q-space />
+        </q-card-actions>
+      </q-card>
     </div>
 
   </q-page>
 </template>
 <script>
-import { openURL } from 'quasar'
+import { openURL, debounce } from 'quasar'
 import QRCode from 'vue-qrcode-component'
 
 export default {
@@ -75,10 +86,30 @@ export default {
   },
   created () {
     this.loadSites()
-  },
-  watch: {
+
+    window.addEventListener(
+      'resize',
+      debounce(() => {
+        this.setMaxCardHeight()
+      }, 300)
+    )
   },
   methods: {
+    setMaxCardHeight () {
+      let maxHeight = 0
+      let cards = document.getElementsByClassName('card')
+      for (let i = 0; i < cards.length; i++) {
+        cards[i].style.height = null
+      }
+      for (let i = 0; i < cards.length; i++) {
+        if (parseInt(cards[i].offsetHeight) > maxHeight) {
+          maxHeight = parseInt(cards[i].offsetHeight)
+        }
+      }
+      for (let i = 0; i < cards.length; i++) {
+        cards[i].style.height = maxHeight + 'px'
+      }
+    },
     openURL (url) {
       openURL(url)
     },
@@ -91,6 +122,9 @@ export default {
         .then(response => {
           this.$q.loading.hide()
           this.sites = response.data
+          this.$nextTick(() => {
+            this.setMaxCardHeight()
+          })
         })
     },
     deleteSite (site) {
@@ -113,6 +147,9 @@ export default {
               }
               if (res.data.status === 'success') {
                 this.loadSites()
+                this.$nextTick(() => {
+                  this.setMaxCardHeight()
+                })
               }
             })
             .catch(err => {
@@ -134,8 +171,5 @@ export default {
   .qr-100 canvas {
     width: 100% !important;
     max-width: 100% !important;
-  }
-  .small-card {
-    width: 196px !important;
   }
 </style>

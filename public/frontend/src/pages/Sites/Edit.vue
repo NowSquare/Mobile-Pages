@@ -48,8 +48,8 @@ Site
             <q-tabs
                 v-model="siteTab"
                 class="text-blue-grey-9 bg-blue-grey-1"
-                active-color="primary"
-                indicator-color="primary"
+                active-color="light-blue-10"
+                indicator-color="light-blue-10"
                 align="justify"
                 narrow-indicator
               >
@@ -79,14 +79,18 @@ Site - Tree
                         :expanded.sync="treeExpandedKeys"
                         @update:selected="checkForPageChanges"
                       >
-                        <template v-slot:body-story="prop">
-                          <div v-if="prop.node.position !== 'single'">
-                            <q-btn flat icon="arrow_upward" :disabled="prop.node.position === 'first'" size="9px" color="grey-9" class="q-pa-none q-px-xs" @click="movePageConfirm(prop.node.uuid, 'up')">
-                              <q-tooltip>Move page up</q-tooltip>
-                            </q-btn>
-                            <q-btn flat icon="arrow_downward" :disabled="prop.node.position === 'last'" size="9px" color="grey-9" class="q-pa-none q-px-xs" @click="movePageConfirm(prop.node.uuid, 'down')">
-                              <q-tooltip>Move page down</q-tooltip>
-                            </q-btn>
+                        <template v-slot:header-move="prop">
+                          <div class="row items-center">
+                            <q-icon :name="prop.node.icon" class="q-mr-xs"/>
+                            <div v-if="prop.node.position !== 'single'">
+                              <q-btn flat icon="arrow_upward" :disabled="prop.node.position === 'first'" size="9px" color="grey-9" class="q-pa-none" @click="movePageConfirm(prop.node.uuid, 'up')">
+                                <q-tooltip>Move page up</q-tooltip>
+                              </q-btn>
+                              <q-btn flat icon="arrow_downward" :disabled="prop.node.position === 'last'" size="9px" color="grey-9" class="q-pa-none q-mr-xs" @click="movePageConfirm(prop.node.uuid, 'down')">
+                                <q-tooltip>Move page down</q-tooltip>
+                              </q-btn>
+                            </div>
+                            <div>{{ prop.node.name }}</div>
                           </div>
                         </template>
                       </q-tree>
@@ -324,8 +328,8 @@ Page
           <q-tabs
             v-model="pageTab"
             class="text-blue-grey-9 bg-blue-grey-1"
-            active-color="primary"
-            indicator-color="primary"
+            active-color="light-blue-10"
+            indicator-color="light-blue-10"
             align="justify"
             narrow-indicator
           >

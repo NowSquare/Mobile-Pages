@@ -23,7 +23,7 @@ class DemoContentSeeder extends Seeder
       $account_id = 1;
       $created_by = 1;
 
-      $site_count = 12;
+      $site_count = 5;
       $site_min_pages_count = 4;
       $site_max_pages_count = 8;
 

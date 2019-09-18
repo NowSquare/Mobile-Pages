@@ -3,7 +3,7 @@
     <q-header
       bordered
       height-hint="57"
-      class="bg-grey-2 text-grey-9"
+      class="bg-blue-grey-1 text-blue-grey-10"
     >
       <q-toolbar style="height: 57px">
         <q-btn
@@ -59,19 +59,19 @@
       v-model="leftDrawerOpen"
       :width="250"
       :breakpoint="1023"
-      content-class="bg-grey-10 text-grey-1"
+      content-class="bg-black text-grey-1"
       content-style="pointer-events:all"
     >
       <q-scroll-area class="fit">
 
         <q-toolbar style="height: 57px">
-          <q-toolbar-title class="row items-center text-grey-7">
-            <span class="q-ml-sm">{{ window.config.app_name }}</span>
+          <q-toolbar-title class="row items-center text-grey-5">
+            <span class="q-ml-sm">{{ window.config.app_name }} <span class="text-caption">v{{ window.config.version }}</span></span>
           </q-toolbar-title>
         </q-toolbar>
 
-        <q-list>
-          <q-item v-for="link in links1" :key="link.text" clickable exact :to="{ name: link.to }" active-class="bg-grey-9">
+        <q-list class="text-blue-grey-3">
+          <q-item v-for="link in links1" :key="link.text" clickable exact :to="{ name: link.to }" active-class="bg-blue-grey-9">
             <q-item-section avatar>
               <q-icon :name="link.icon" />
             </q-item-section>
@@ -80,9 +80,9 @@
             </q-item-section>
           </q-item>
 
-          <q-separator class="q-my-md" style="background:#313131" />
+          <q-separator class="q-my-md" style="background:#222" />
 
-          <q-item clickable :to="{ name: 'user.profile' }" active-class="bg-grey-9">
+          <q-item clickable :to="{ name: 'user.profile' }" active-class="bg-blue-grey-10">
             <q-item-section avatar>
               <q-icon name="person" />
             </q-item-section>
@@ -91,9 +91,9 @@
             </q-item-section>
           </q-item>
 
-          <q-separator class="q-my-md" style="background:#313131" />
+          <q-separator class="q-my-md" style="background:#222" />
 
-          <q-item clickable @click="$auth.logout()" active-class="bg-grey-9">
+          <q-item clickable @click="$auth.logout()" active-class="bg-blue-grey-10">
             <q-item-section avatar>
               <q-icon name="logout" />
             </q-item-section>

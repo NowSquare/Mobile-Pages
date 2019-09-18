@@ -1,9 +1,9 @@
 <template>
-  <q-page class="fit row justify-center q-pa-lg bg-blue-8">
+  <q-page class="fit row justify-center q-pa-lg bg-light-blue-8">
     <div class="col-12">
       <div class="fit self-center">
-        <q-card flat class="no-border-radius bg-grey-1 text-grey-10 full-width">
-          <q-card-section class="bg-blue-grey-1">
+        <q-card flat class="no-border-radius bg-blue-grey-1 text-grey-10 full-width">
+          <q-card-section class="text-light-blue-1 bg-light-blue-10">
             <div class="row items-center no-wrap">
               <div class="col">
                 <div class="text-h5">{{ $t('profile') }}</div>
@@ -28,9 +28,9 @@
 
           <q-tabs
               v-model="tabs"
-              class="text-blue-grey-9 bg-blue-grey-1"
-              active-color="primary"
-              indicator-color="primary"
+              class="text-light-blue-3 bg-light-blue-10"
+              active-color="light-blue-1"
+              indicator-color="light-blue-1"
               align="left"
               narrow-indicator
             >
@@ -41,7 +41,7 @@
           <q-separator />
 
           <q-form ref="frm1" id="frm1" @submit.prevent.stop="onSubmit" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" accept-charset="UTF-8" enctype="multipart/form-data">
-            <q-tab-panels v-model="tabs" animated keep-alive>
+            <q-tab-panels v-model="tabs" animated keep-alive class="text-blue-grey-9 bg-blue-grey-1">
               <q-tab-panel name="general">
 
                 <q-avatar

@@ -150,8 +150,8 @@ module.exports = function (ctx) {
       // workboxOptions: {}, // only for NON InjectManifest
       manifest: {
         // name: 'App',
-        short_name: 'Mobile Site Builder',
-        description: 'Mobile Site Builder for fast content',
+        short_name: 'Mobile Pages',
+        description: 'Mobile Site Builder',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
