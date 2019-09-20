@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'script_version' => '1.0.1'
+    'script_version' => '1.1.0'
 ];

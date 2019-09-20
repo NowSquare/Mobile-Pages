@@ -37,10 +37,9 @@
               >
               </q-input>
               <q-select
-                v-show="false"
                 v-model="form.module.value"
                 name="module"
-                label="Homepage type"
+                label="Homepage"
                 :options="modules"
                 use-input
                 hide-selected
@@ -71,7 +70,15 @@ export default {
       modules: [
         {
           label: 'Content',
-          value: 'content'
+          value: 'Content'
+        },
+        {
+          label: 'Business Card',
+          value: 'BusinessCard'
+        },
+        {
+          label: 'Deal',
+          value: 'Deal'
         }
       ],
       form: {
@@ -83,7 +90,7 @@ export default {
         module: {
           value: {
             label: 'Content',
-            value: 'content'
+            value: 'Content'
           },
           error: false,
           errorMsg: null

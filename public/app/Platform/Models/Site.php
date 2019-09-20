@@ -154,6 +154,8 @@ class Site extends Model implements HasMedia
           $content = $page->content;
           $content['imgAboveContent'] = $content['imgAboveContent'] ?? '';
           $content['imgAboveContentFileName'] = $content['imgAboveContentFileName'] ?? '';
+          $content['imgAvatar'] = $content['imgAvatar'] ?? '';
+          $content['imgAvatarFileName'] = $content['imgAvatarFileName'] ?? '';
           $content['content'] = $content['content'] ?? '';
 
           $settings = $page->settings;
@@ -166,6 +168,15 @@ class Site extends Model implements HasMedia
           if ($index == count($sitePages) - 1) $position = 'last';
           if (count($sitePages) == 2) $position = 'single';
 
+          switch ($page->module) {
+            case 'Content': $icon = 'notes'; break;
+            case 'Deal': $icon = 'store'; break;
+            case 'BusinessCard': $icon = 'mdi-account-card-details-outline'; break;
+            default: $icon = 'notes';
+          }
+
+          if ($page->module === null) $page->module = [];
+
           $children[] = [
             'uuid' => $page->uuid,
             'name' => $page->name,
@@ -173,8 +184,8 @@ class Site extends Model implements HasMedia
             'header' => 'move',
             'position' => $position,
             'content' => $content,
-            'module' => 'Content',
-            'icon' => 'notes'
+            'module' => $page->module,
+            'icon' => $icon
           ];
         }
       }

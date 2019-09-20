@@ -81,7 +81,6 @@ Site - Tree
                       >
                         <template v-slot:header-move="prop">
                           <div class="row items-center">
-                            <q-icon :name="prop.node.icon" class="q-mr-xs"/>
                             <div v-if="prop.node.position !== 'single'">
                               <q-btn flat icon="arrow_upward" :disabled="prop.node.position === 'first'" size="9px" color="grey-9" class="q-pa-none" @click="movePageConfirm(prop.node.uuid, 'up')">
                                 <q-tooltip>Move page up</q-tooltip>
@@ -90,6 +89,7 @@ Site - Tree
                                 <q-tooltip>Move page down</q-tooltip>
                               </q-btn>
                             </div>
+                            <q-icon :name="prop.node.icon" class="q-mr-sm"/>
                             <div>{{ prop.node.name }}</div>
                           </div>
                         </template>
@@ -359,15 +359,49 @@ Site - Page tab
 
                   <ImageUpload
                     ref="imgAboveContent"
-                    label="Image above content"
+                    label="Image"
                     name="imgAboveContent"
                     v-model="sitePage.content.imgAboveContent"
-                    :key="sitePage.uuid"
+                    :key="'imgAboveContent' + sitePage.uuid"
                     :error="(typeof errorBag.imgAboveContent !== 'undefined') ? errorBag.imgAboveContent.error : false"
                     :error-message="(typeof errorBag.imgAboveContent !== 'undefined') ? errorBag.imgAboveContent.errorMsg : null"
                     @filename="(val) => { sitePage.content.imgAboveContentFileName = val }"
                     :default-value="sitePage.content.imgAboveContentFileName"
                   />
+
+                  <div v-if="sitePage.module === 'BusinessCard'">
+                    <ImageUpload
+                      ref="imgAvatar"
+                      label="Avatar"
+                      name="imgAvatar"
+                      v-model="sitePage.content.imgAvatar"
+                      :key="'imgAvatar' + sitePage.uuid"
+                      :error="(typeof errorBag.imgAvatar !== 'undefined') ? errorBag.imgAvatar.error : false"
+                      :error-message="(typeof errorBag.imgAvatar !== 'undefined') ? errorBag.imgAvatar.errorMsg : null"
+                      @filename="(val) => { sitePage.content.imgAvatarFileName = val }"
+                      :default-value="sitePage.content.imgAvatarFileName"
+                    />
+
+                    <q-input
+                      ref="centeredTitleBelowImage"
+                      v-model="sitePage.content.centeredTitleBelowImage"
+                      label="Full name"
+                      name="centeredTitleBelowImage"
+                      maxlength="64"
+                      :error="(typeof errorBag.centeredTitleBelowImage !== 'undefined') ? errorBag.centeredTitleBelowImage.error : false"
+                      :error-message="(typeof errorBag.centeredTitleBelowImage !== 'undefined') ? errorBag.centeredTitleBelowImage.errorMsg : null"
+                    />
+
+                    <q-input
+                      ref="centeredSubTitle"
+                      v-model="sitePage.content.centeredSubTitle"
+                      label="Job title"
+                      name="centeredSubTitle"
+                      maxlength="64"
+                      :error="(typeof errorBag.centeredSubTitle !== 'undefined') ? errorBag.centeredSubTitle.error : false"
+                      :error-message="(typeof errorBag.centeredSubTitle !== 'undefined') ? errorBag.centeredSubTitle.errorMsg : null"
+                    />
+                  </div>
 
                   <Editor
                     ref="content"
@@ -377,6 +411,84 @@ Site - Page tab
                     :error="(typeof errorBag.content !== 'undefined') ? errorBag.content.error : false"
                     :error-message="(typeof errorBag.content !== 'undefined') ? errorBag.content.errorMsg : null"
                   />
+
+                  <div v-if="sitePage.module === 'Deal'">
+
+                    <q-input
+                      ref="titleAboveImage"
+                      v-model="sitePage.content.titleAboveImage"
+                      label="Title"
+                      name="titleAboveImage"
+                      maxlength="64"
+                      :error="(typeof errorBag.titleAboveImage !== 'undefined') ? errorBag.titleAboveImage.error : false"
+                      :error-message="(typeof errorBag.titleAboveImage !== 'undefined') ? errorBag.titleAboveImage.errorMsg : null"
+                    />
+
+                    <q-input
+                      ref="expirationDate"
+                      name="expirationDate"
+                      v-model="sitePage.content.expirationDate"
+                      mask="date"
+                      :rules="['date']"
+                      label="Expires"
+                    >
+                      <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                          <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                            <q-date v-model="sitePage.content.expirationDate" @input="() => $refs.qDateProxy.hide()" />
+                          </q-popup-proxy>
+                        </q-icon>
+                      </template>
+                    </q-input>
+
+                    <q-input
+                      ref="location"
+                      v-model="sitePage.content.location"
+                      label="Location"
+                      icon="mdi-map-marker"
+                      name="location"
+                      maxlength="64"
+                      :error="(typeof errorBag.location !== 'undefined') ? errorBag.location.error : false"
+                      :error-message="(typeof errorBag.location !== 'undefined') ? errorBag.location.errorMsg : null"
+                    >
+                      <template v-slot:prepend>
+                        <q-icon name="mdi-map-marker" />
+                      </template>
+                    </q-input>
+
+                  </div>
+
+                  <div v-if="sitePage.module === 'Deal' || sitePage.module === 'BusinessCard'">
+
+                    <q-input
+                      ref="phone"
+                      v-model="sitePage.content.phone"
+                      label="Phone"
+                      name="phone"
+                      maxlength="64"
+                      :error="(typeof errorBag.phone !== 'undefined') ? errorBag.phone.error : false"
+                      :error-message="(typeof errorBag.phone !== 'undefined') ? errorBag.phone.errorMsg : null"
+                    >
+                      <template v-slot:prepend>
+                        <q-icon name="phone" />
+                      </template>
+                    </q-input>
+
+                    <q-input
+                      ref="website"
+                      v-model="sitePage.content.website"
+                      label="Website"
+                      name="website"
+                      maxlength="64"
+                      :error="(typeof errorBag.website !== 'undefined') ? errorBag.website.error : false"
+                      :error-message="(typeof errorBag.website !== 'undefined') ? errorBag.website.errorMsg : null"
+                    >
+                      <template v-slot:prepend>
+                        <q-icon name="info" />
+                      </template>
+                    </q-input>
+
+                  </div>
 
                 </q-tab-panel>
 <!--
@@ -463,10 +575,25 @@ export default {
       pageModules: [
         {
           icon: 'notes',
-          color: 'grey-9',
           label: 'Content',
           description: 'Basic content page.',
           module: 'Content',
+          canBeHomePage: true,
+          onlyOneInstanceAllowed: false
+        },
+        {
+          icon: 'mdi-account-card-details-outline',
+          label: 'Business Card',
+          description: 'Digital business card.',
+          module: 'BusinessCard',
+          canBeHomePage: true,
+          onlyOneInstanceAllowed: false
+        },
+        {
+          icon: 'store',
+          label: 'Deal',
+          description: 'Promote a deal.',
+          module: 'Deal',
           canBeHomePage: true,
           onlyOneInstanceAllowed: false
         }

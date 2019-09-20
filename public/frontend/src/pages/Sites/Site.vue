@@ -45,6 +45,8 @@
               </q-toolbar>
             </q-page-sticky>
 
+            <div class="text-h5 text-weight-light q-mb-md" v-if="sitePage.content.titleAboveImage" v-html="sitePage.content.titleAboveImage"/>
+
             <q-img
               v-if="sitePage.content.imgAboveContent"
               class="q-mb-md rounded-borders shadow-1"
@@ -53,7 +55,30 @@
               spinner-color="white"
             />
 
+            <div class="full-width q-mb-md" :style="{ 'position': 'relative', 'height': '164px', 'margin-top': sitePage.content.imgAboveContent ? '-96px' : '0' }" v-if="sitePage.content.imgAvatar">
+              <q-avatar size="164px" class="absolute-center shadow-8">
+                <q-img
+                  :src="sitePage.content.imgAvatar"
+                  transition="fade"
+                  spinner-color="white"
+                />
+              </q-avatar>
+            </div>
+
+            <div class="text-h4 text-weight-light text-center q-mb-xs" v-if="sitePage.content.centeredTitleBelowImage" v-html="sitePage.content.centeredTitleBelowImage"/>
+
+            <div class="text-h6 text-weight-light text-center q-mb-lg" v-if="sitePage.content.centeredSubTitle" v-html="sitePage.content.centeredSubTitle"/>
+
             <div v-html="sitePage.content.content"/>
+
+            <div class="q-mt-md text-weight-thin" v-if="sitePage.content.expirationDate">Expires: {{ sitePage.content.expirationDate }}</div>
+
+            <div class="q-mt-md" v-if="sitePage.content.location"><q-icon name="mdi-map-marker"/> <a :href="'https://maps.google.com/?daddr=' + encodeURI(sitePage.content.location)" target="_blank">{{ sitePage.content.location }}</a></div>
+
+            <div class="row q-gutter-md q-mt-sm">
+              <q-btn v-if="sitePage.content.phone" type="a" :href="'tel:' + sitePage.content.phone" label="Call" size="lg" icon="phone" class="col" :style="{'background-color': site.design.headerBgColor, 'color': site.design.headerTextColor}"/>
+              <q-btn v-if="sitePage.content.website" type="a" :href="sitePage.content.website" target="_blank" label="More" size="lg" icon="info" class="col" :style="{'background-color': site.design.headerBgColor, 'color': site.design.headerTextColor}"/>
+            </div>
 
           </q-page>
 

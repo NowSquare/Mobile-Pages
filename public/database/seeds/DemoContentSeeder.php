@@ -63,6 +63,7 @@ class DemoContentSeeder extends Seeder
           $sitePage->content = [
             'content' => '<div><font size="3">' . implode('</font></div><font size="3"><br></font><div><font size="3">', $faker->paragraphs($nb = 3, $asText = false)) . '</font></div>'
           ];
+          $sitePage->module = 'Content';
           $sitePage->created_by = $created_by;
 
           $sitePage->appendToNode($site)->save();

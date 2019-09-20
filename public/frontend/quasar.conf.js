@@ -84,7 +84,9 @@ module.exports = function (ctx) {
         'QBanner',
         'QForm',
         'QSelect',
-        'QToggle'
+        'QToggle',
+        'QDate',
+        'QTime'
       ],
 
       directives: [
