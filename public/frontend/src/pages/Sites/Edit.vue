@@ -82,10 +82,10 @@ Site - Tree
                         <template v-slot:header-move="prop">
                           <div class="row items-center">
                             <div v-if="prop.node.position !== 'single'">
-                              <q-btn flat icon="arrow_upward" :disabled="prop.node.position === 'first'" size="9px" color="grey-9" class="q-pa-none" @click="movePageConfirm(prop.node.uuid, 'up')">
+                              <q-btn flat dense icon="arrow_upward" :disabled="prop.node.position === 'first'" size="xs" color="grey-9" class="q-pa-none" @click="movePageConfirm(prop.node.uuid, 'up')">
                                 <q-tooltip>Move page up</q-tooltip>
                               </q-btn>
-                              <q-btn flat icon="arrow_downward" :disabled="prop.node.position === 'last'" size="9px" color="grey-9" class="q-pa-none q-mr-xs" @click="movePageConfirm(prop.node.uuid, 'down')">
+                              <q-btn flat dense icon="arrow_downward" :disabled="prop.node.position === 'last'" size="xs" color="grey-9" class="q-pa-none q-mr-xs" @click="movePageConfirm(prop.node.uuid, 'down')">
                                 <q-tooltip>Move page down</q-tooltip>
                               </q-btn>
                             </div>
@@ -369,7 +369,7 @@ Site - Page tab
                     :default-value="sitePage.content.imgAboveContentFileName"
                   />
 
-                  <div v-if="sitePage.module === 'BusinessCard'">
+                  <div v-if="sitePage.module === 'BusinessCard'" :key="sitePage.uuid">
                     <ImageUpload
                       ref="imgAvatar"
                       label="Avatar"
@@ -412,7 +412,7 @@ Site - Page tab
                     :error-message="(typeof errorBag.content !== 'undefined') ? errorBag.content.errorMsg : null"
                   />
 
-                  <div v-if="sitePage.module === 'Deal'">
+                  <div v-if="sitePage.module === 'Deal'" :key="sitePage.uuid">
 
                     <q-input
                       ref="titleAboveImage"
@@ -458,7 +458,7 @@ Site - Page tab
 
                   </div>
 
-                  <div v-if="sitePage.module === 'Deal' || sitePage.module === 'BusinessCard'">
+                  <div v-if="sitePage.module === 'Deal' || sitePage.module === 'BusinessCard'" :key="sitePage.uuid">
 
                     <q-input
                       ref="phone"
