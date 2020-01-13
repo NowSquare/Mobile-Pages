@@ -59,7 +59,7 @@
       v-model="leftDrawerOpen"
       :width="250"
       :breakpoint="1023"
-      content-class="bg-black text-grey-1"
+      content-class="bg-blue-grey-10 text-grey-1"
       content-style="pointer-events:all"
     >
       <q-scroll-area class="fit">
@@ -80,7 +80,7 @@
             </q-item-section>
           </q-item>
 
-          <q-separator class="q-my-md" style="background:#222" />
+          <q-separator class="q-my-md bg-blue-grey-9" />
 
           <q-item clickable :to="{ name: 'user.profile' }" active-class="bg-blue-grey-10">
             <q-item-section avatar>
@@ -91,7 +91,7 @@
             </q-item-section>
           </q-item>
 
-          <q-separator class="q-my-md" style="background:#222" />
+          <q-separator class="q-my-md bg-blue-grey-9" />
 
           <q-item clickable @click="$auth.logout()" active-class="bg-blue-grey-10">
             <q-item-section avatar>
