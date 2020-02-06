@@ -55,7 +55,7 @@
           ],
           ['unordered', 'ordered'],
 
-          ['undo', 'redo']
+          ['viewsource']
         ]"
         :fonts="{
           arial: 'Arial',
